@@ -5,8 +5,4 @@ import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Post('/register')
-  async userRegister(@Body() input: UserRegisterInput) {
-    return await this.userService.userRegister(input);
-  }
 }
