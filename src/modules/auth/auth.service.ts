@@ -2,26 +2,26 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../share/prisma.service';
-import { UserRegisterInput } from '../user/dto/user.dto';
+import { UserLoginInput, UserRegisterInput } from '../user/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private prisma: PrismaService,
-    private userService: UserService,
+    private readonly prisma: PrismaService,
   ) {}
 
-  async signIn(username, pass) {
+  async signIn(input: UserLoginInput) {
+    const { email, password } = input;
     const user = await this.prisma.user.findUnique({
       where: {
-        email: username,
+        email: email,
       },
     });
     if (!user) {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
     }
-    const passwordMatch = await bcrypt.compare(pass, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
     }
@@ -30,9 +30,6 @@ export class AuthService {
       ...user,
       accessToken: this.generateToken(user.id),
     };
-  }
-  async register(input: UserRegisterInput) {
-    return this.userService.createUser(input);
   }
 
   generateToken(userId: number) {

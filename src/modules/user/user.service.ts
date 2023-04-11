@@ -22,7 +22,7 @@ export class UserService {
     }
   }
 
-  // async userLogin(input: UserLoginInput) {
+  async userCreatePost(input: UserLoginInput) {
 
-  // }
+  }
 }
