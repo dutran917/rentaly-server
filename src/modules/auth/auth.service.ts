@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../share/prisma.service';
@@ -12,12 +16,13 @@ export class AuthService {
   ) {}
 
   async signIn(input: UserLoginInput) {
-    const { email, password } = input;
+    const { username, password } = input;
     const user = await this.prisma.user.findUnique({
       where: {
-        email: email,
+        email: username,
       },
     });
+
     if (!user) {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
     }

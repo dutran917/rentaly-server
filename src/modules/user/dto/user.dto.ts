@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class UserRegisterInput {
   @IsNotEmpty()
@@ -11,7 +11,9 @@ export class UserRegisterInput {
 
 export class UserLoginInput {
   @IsNotEmpty()
-  email: string;
+  @IsString()
+  username: string;
   @IsNotEmpty()
+  @IsString()
   password: string;
 }
