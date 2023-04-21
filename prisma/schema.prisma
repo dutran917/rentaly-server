@@ -11,31 +11,82 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   password  String
-  email     String  @unique
+  email     String      @unique
   full_name String?
-  phone     String? @unique
-  posts     Post[]
+  phone     String?     @unique
+  apartment Apartment[]
 }
 
-model Post {
-  id          Int      @id @default(autoincrement())
+model Room {
+  id          Int          @id @default(autoincrement())
   title       String
   content     String?
   price       Int?
   area        Float?
-  published   Boolean? @default(false)
-  author      User     @relation(fields: [authorId], references: [id])
   authorId    Int
   living_room Int?
   bed_room    Int?
+  floor       Int
   image       image[]
+  Apartment   Apartment?   @relation(fields: [apartmentId], references: [id])
+  apartmentId Int?
+  TagsInRoom  TagsInRoom[]
+}
+
+model Apartment {
+  id              Int               @id @default(autoincrement())
+  title           String
+  content         String?
+  published       Boolean?          @default(false)
+  owner           User              @relation(fields: [ownerId], references: [id])
+  ownerId         Int
+  lat             Float
+  long            Float
+  district        String
+  province        String
+  rooms           Room[]
+  TagsInApartment TagsInApartment[]
+}
+
+model TagsInApartment {
+  apartment      Apartment    @relation(fields: [apartmentId], references: [id])
+  apartmentId    Int
+  tag            ApartmentTag @relation(fields: [apartmentTagId], references: [id])
+  apartmentTagId Int
+
+  @@id([apartmentId, apartmentTagId])
+}
+
+model TagsInRoom {
+  room      Room    @relation(fields: [roomId], references: [id])
+  tag       RoomTag @relation(fields: [roomTagId], references: [id])
+  roomId    Int
+  roomTagId Int
+
+  @@id([roomId, roomTagId])
+}
+
+model ApartmentTag {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  icon            String
+  createdAt       DateTime          @default(now())
+  TagsInApartment TagsInApartment[]
+}
+
+model RoomTag {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  icon       String
+  createdAt  DateTime     @default(now())
+  TagsInRoom TagsInRoom[]
 }
 
 model image {
   id     Int    @id @default(autoincrement())
   url    String
-  post   Post   @relation(fields: [postId], references: [id])
-  postId Int
+  room   Room   @relation(fields: [roomId], references: [id])
+  roomId Int
 }

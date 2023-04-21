@@ -22,7 +22,19 @@ export class UserService {
     }
   }
 
-  async userCreatePost(input: UserLoginInput) {
-
+  async getInfoUser(userId: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+      delete user.password;
+      return user;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
+
+  async userCreatePost(input: UserLoginInput) {}
 }
