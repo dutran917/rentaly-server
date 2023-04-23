@@ -29,7 +29,6 @@ model Room {
   living_room Int?
   bed_room    Int?
   floor       Int
-  image       image[]
   Apartment   Apartment?   @relation(fields: [apartmentId], references: [id])
   apartmentId Int?
   TagsInRoom  TagsInRoom[]
@@ -48,6 +47,7 @@ model Apartment {
   province        String
   rooms           Room[]
   TagsInApartment TagsInApartment[]
+  image           image[]
 }
 
 model TagsInApartment {
@@ -85,8 +85,8 @@ model RoomTag {
 }
 
 model image {
-  id     Int    @id @default(autoincrement())
-  url    String
-  room   Room   @relation(fields: [roomId], references: [id])
-  roomId Int
+  id          Int       @id @default(autoincrement())
+  url         String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id])
+  apartmentId Int
 }

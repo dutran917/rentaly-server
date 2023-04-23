@@ -1,33 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateApartmentDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
 
 @Injectable()
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(input: CreatePostDto, id: number) {
+  async createApartment(input: CreateApartmentDto, id: number) {
     try {
-      const { image, content, title, price, area, living_room, bed_room } =
+      const { image, content, title, lat, long, district, province, tags } =
         input;
 
       delete input.image;
 
-      const post = await this.prisma.post.create({
+      const post = await this.prisma.apartment.create({
         data: {
-          authorId: id,
+          ownerId: id,
           title,
           content,
-          price,
-          area,
-          living_room,
-          bed_room,
+          lat,
+          long,
+          district,
+          province,
         },
+      });
+
+      const tagsInApartment = tags.map((tag) => ({
+        apartmentId: post.id,
+        apartmentTagId: tag,
+      }));
+
+      await this.prisma.tagsInApartment.createMany({
+        data: tagsInApartment,
       });
 
       const images = image.map((item) => ({
         url: item,
-        postId: post.id,
+        apartmentId: post.id,
       }));
 
       await this.prisma.image.createMany({
@@ -48,10 +56,6 @@ export class PostService {
 
   findOne(id: number) {
     return `This action returns a #${id} post`;
-  }
-
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
   }
 
   remove(id: number) {

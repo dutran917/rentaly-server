@@ -1,9 +1,10 @@
-export class CreatePostDto {
+export class CreateApartmentDto {
   title: string;
   content: string;
-  price: number;
-  area: number;
-  living_room: number;
-  bed_room: number;
+  lat: number;
+  long: number;
+  district: string;
+  province: string;
   image: string[];
+  tags: number[];
 }
