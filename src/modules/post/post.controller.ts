@@ -18,11 +18,20 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @UseGuards(AuthGuard)
-  @Post()
+  @Post('/apartment')
   create(
     @Body() createPostDto: CreateApartmentDto,
     @CurrentUser('id') userId: number,
   ) {
     return this.postService.createApartment(createPostDto, userId);
+  }
+
+  @Get('/apartment-tag')
+  getApartmentTags() {
+    return this.postService.getApartmentTag();
+  }
+  @Get('/room-tag')
+  getRoomTags() {
+    return this.postService.getRoomTag();
   }
 }

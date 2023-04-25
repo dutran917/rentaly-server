@@ -1,20 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateApartmentDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
-
 @Injectable()
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
   async createApartment(input: CreateApartmentDto, id: number) {
     try {
-      const { image, content, title, lat, long, district, province, tags } =
-        input;
+      const {
+        image,
+        content,
+        title,
+        lat,
+        long,
+        district,
+        province,
+        tags,
+        subtitle,
+        address,
+      } = input;
 
       delete input.image;
 
       const post = await this.prisma.apartment.create({
         data: {
           ownerId: id,
+          address,
+          subtitle,
           title,
           content,
           lat,
@@ -50,15 +61,10 @@ export class PostService {
     }
   }
 
-  findAll() {
-    return `This action returns all post`;
+  async getApartmentTag() {
+    return await this.prisma.apartmentTag.findMany({});
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async getRoomTag() {
+    return await this.prisma.roomTag.findMany({});
   }
 }

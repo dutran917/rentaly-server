@@ -1,0 +1,106 @@
+{
+    "apartment": [
+        {
+            "name": "Camera",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/cctv.png"
+        },
+        {
+            "name": "Thang bộ",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/stairs.png"
+        },
+        {
+            "name": "Thang máy",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/elevator.png"
+        },
+        {
+            "name": "Khóa vân tay",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/fingerprint.png"
+        },
+        {
+            "name": "Khu để xe",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/parking-sign.png"
+        },
+        {
+            "name": "Thiết bị PCCC",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/extinguisher.png"
+        },
+        {
+            "name": "Khu phơi đồ",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/costume-clothes.png"
+        },
+        {
+            "name": "Giờ giấc tự do",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/24-hours.png"
+        }
+    ],
+    "room": [
+        {
+            "name": "Máy giặt",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/washing-machine.png"
+        },
+        {
+            "name": "Tủ lạnh",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/refrigerator.png"
+        },
+        {
+            "name": "Máy hút mùi",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/extractor.png"
+        },
+        {
+            "name": "Giường ngủ",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/bed.png"
+        },
+        {
+            "name": "Điều hòa",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/bed.png"
+        },
+        {
+            "name": "Tủ đồ",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/wardrobe.png"
+        },
+        {
+            "name": "Bàn ghế",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/wardrobe.png"
+        },
+        {
+            "name": "TV",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/monitor.png"
+        },
+        {
+            "name": "Bình nóng lạnh",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/heater.png"
+        },
+        {
+            "name": "Rèm cửa",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/stage.png"
+        },
+        {
+            "name": "Thiết bị vệ sinh",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/shower.png"
+        },
+        {
+            "name": "Mạng wifi",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/wifi.png"
+        },
+        {
+            "name": "Tủ bếp",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/kitchen.png"
+        },
+        {
+            "name": "Bàn ăn",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/teppanyaki.png"
+        },
+        {
+            "name": "Bếp diện",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/electric-stove.png"
+        },
+        {
+            "name": "Ban công",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/antique-balcony.png"
+        },
+        {
+            "name": "Đệm giường",
+            "icon": "https://bandon.vn/resize/100x100/a-c/zc-1/f/uploads/services/blanket.png"
+        }
+    ]
+}
