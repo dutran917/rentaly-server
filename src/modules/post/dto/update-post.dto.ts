@@ -1,22 +1,18 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateApartmentDto {
+export class UpdateApartmentDto {
+  @IsNotEmpty()
+  apartmentId: number;
   title: string;
   subtitle: string;
   content: string;
-  address: string;
-  lat: number;
-  long: number;
-  district: string;
-  province: string;
   image: string[];
   tags: number[];
 }
 
-export class CreateRoomDto {
+export class UpdateRoomDto {
   @IsNotEmpty()
-  apartmentId: number;
-  @IsNotEmpty()
+  roomId: number;
   title: string;
   price: number;
   maximum: number;
