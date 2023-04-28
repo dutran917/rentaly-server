@@ -45,6 +45,15 @@ export class PostController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('/apartment/:id')
+  getApartmentInfo(
+    @Param('id') id: number,
+    @CurrentUser('id') ownerId: number,
+  ) {
+    return this.postService.getDetailApartment(id, ownerId);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('/room-list/:id')
   getRoomsInApartment(@Param('id') id: number) {
     return this.postService.getRoomsInApartment(id);
