@@ -15,7 +15,7 @@ interface UploadResult {
 export class UploadController {
   constructor(private readonly cloudinary: CloudinaryService) {}
   @Post('multi')
-  @UseInterceptors(FilesInterceptor('files', 5, {}))
+  @UseInterceptors(FilesInterceptor('file', 1, {}))
   async uploadMultiFile(
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<UploadResult[]> {
