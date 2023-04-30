@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateApartmentDto } from './dto/create-post.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
+import { GetListApartmentDto } from './dto/get-post.dto';
+import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 @Injectable()
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
@@ -53,6 +55,221 @@ export class PostService {
         data: images,
       });
 
+      return {
+        id: post.id,
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createRoom(input: CreateRoomDto) {
+    const {
+      apartmentId,
+      title,
+      price,
+      maximum,
+      living_room,
+      bed_room,
+      floor,
+      tags,
+      area,
+    } = input;
+    try {
+      const createRoom = await this.prisma.room.create({
+        data: {
+          apartmentId,
+          title,
+          price,
+          maximum,
+          living_room,
+          bed_room,
+          floor,
+          area,
+        },
+      });
+      const tagsInRoom = tags.map((item) => ({
+        roomId: createRoom.id,
+        roomTagId: item,
+      }));
+
+      await this.prisma.tagsInRoom.createMany({
+        data: tagsInRoom,
+      });
+      return {
+        id: createRoom.id,
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getListApartment(input: GetListApartmentDto, ownerId: number) {
+    const whereOption = {};
+    if (!!input.search) {
+      console.log(input.search);
+
+      whereOption['title'] = {
+        contains: input.search,
+        mode: 'insensitive',
+      };
+    }
+    console.log(whereOption);
+
+    const count = await this.prisma.apartment.count({
+      where: {
+        ownerId: ownerId,
+        ...whereOption,
+      },
+    });
+    const data = await this.prisma.apartment.findMany({
+      where: {
+        ownerId: ownerId,
+        ...whereOption,
+      },
+      take: +input.page_size,
+      skip: +(input.page_size * input.page_index),
+    });
+
+    return {
+      total: count,
+      data,
+    };
+  }
+
+  async getDetailApartment(apartmentId: number, ownerId: number) {
+    try {
+      const apartment = await this.prisma.apartment.findUnique({
+        where: {
+          id: +apartmentId,
+        },
+        include: {
+          TagsInApartment: true,
+          image: true,
+          rooms: true,
+        },
+      });
+      if (!apartment) {
+        throw new BadRequestException('NOT_FOUND');
+      }
+      if (apartment.ownerId !== ownerId) {
+        throw new BadRequestException('INVALID_OWNER');
+      }
+
+      return {
+        data: apartment,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRoomsInApartment(apartmentId: number) {
+    const data = await this.prisma.room.findMany({
+      where: {
+        apartmentId: +apartmentId,
+      },
+      include: {
+        TagsInRoom: true,
+      },
+    });
+    return {
+      data,
+    };
+  }
+
+  async updateApartment(input: UpdateApartmentDto) {
+    // const apartment = this.prisma.apartment.findUnique({
+    //   where: {
+    //     id: input.apartmentId
+    //   }
+    // })
+    try {
+      const { title, subtitle, content, image, tags } = input;
+      await this.prisma.apartment.update({
+        where: {
+          id: input.apartmentId,
+        },
+        data: {
+          title,
+          subtitle,
+          content,
+        },
+      });
+      if (!!image?.length) {
+        const images = image.map((item) => ({
+          url: item,
+          apartmentId: input.apartmentId,
+        }));
+
+        await this.prisma.image.deleteMany({
+          where: {
+            apartmentId: input.apartmentId,
+          },
+        });
+
+        await this.prisma.image.createMany({
+          data: images,
+        });
+      }
+      if (!!tags?.length) {
+        const tagsInApartment = tags.map((tag) => ({
+          apartmentTagId: tag,
+          apartmentId: input.apartmentId,
+        }));
+        await this.prisma.tagsInApartment.deleteMany({
+          where: {
+            apartmentId: input.apartmentId,
+          },
+        });
+
+        await this.prisma.tagsInApartment.createMany({
+          data: tagsInApartment,
+        });
+      }
+      return {
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateRoom(input: UpdateRoomDto) {
+    const { title, price, maximum, living_room, bed_room, floor, tags, area } =
+      input;
+    try {
+      const room = await this.prisma.room.update({
+        where: {
+          id: input.roomId,
+        },
+        data: {
+          title,
+          price,
+          maximum,
+          living_room,
+          bed_room,
+          floor,
+          area,
+        },
+      });
+      if (!!tags?.length) {
+        const tagsInRoom = tags.map((tag) => ({
+          roomTagId: tag,
+          roomId: input.roomId,
+        }));
+        await this.prisma.tagsInRoom.deleteMany({
+          where: {
+            roomId: input.roomId,
+          },
+        });
+
+        await this.prisma.tagsInRoom.createMany({
+          data: tagsInRoom,
+        });
+      }
       return {
         message: 'SUCCESS',
       };

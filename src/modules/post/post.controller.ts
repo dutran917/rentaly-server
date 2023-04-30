@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreateApartmentDto } from './dto/create-post.dto';
+import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from 'src/decorator/auth';
+import { GetListApartmentDto } from './dto/get-post.dto';
+import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 
 @Controller('post')
 export class PostController {
@@ -19,11 +22,53 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Post('/apartment')
-  create(
+  createApartment(
     @Body() createPostDto: CreateApartmentDto,
     @CurrentUser('id') userId: number,
   ) {
     return this.postService.createApartment(createPostDto, userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/room')
+  createRoom(@Body() input: CreateRoomDto) {
+    return this.postService.createRoom(input);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/apartment-list')
+  getListApartment(
+    @Query() query: GetListApartmentDto,
+    @CurrentUser('id') ownerId,
+  ) {
+    return this.postService.getListApartment(query, ownerId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/apartment/:id')
+  getApartmentInfo(
+    @Param('id') id: number,
+    @CurrentUser('id') ownerId: number,
+  ) {
+    return this.postService.getDetailApartment(id, ownerId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/room-list/:id')
+  getRoomsInApartment(@Param('id') id: number) {
+    return this.postService.getRoomsInApartment(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/edit-apartment')
+  updateApartment(@Body() input: UpdateApartmentDto) {
+    return this.postService.updateApartment(input);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/edit-room')
+  updateRoom(@Body() input: UpdateRoomDto) {
+    return this.postService.updateRoom(input);
   }
 
   @Get('/apartment-tag')

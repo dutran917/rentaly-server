@@ -23,14 +23,14 @@ model Room {
   id          Int          @id @default(autoincrement())
   title       String
   content     String?
-  price       Int?
-  area        Float?
-  authorId    Int
-  living_room Int?
+  price       Int
+  area        Float
+  maximum     Int
+  living_room Int          @default(1)
   bed_room    Int?
-  floor       Int
-  Apartment   Apartment?   @relation(fields: [apartmentId], references: [id])
-  apartmentId Int?
+  floor       Int?
+  Apartment   Apartment    @relation(fields: [apartmentId], references: [id])
+  apartmentId Int
   TagsInRoom  TagsInRoom[]
 }
 
