@@ -7,25 +7,26 @@ import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
   async createApartment(input: CreateApartmentDto, id: number) {
-    try {
-      const {
-        image,
-        content,
-        title,
-        lat,
-        long,
-        district,
-        province,
-        tags,
-        subtitle,
-        address,
-      } = input;
+    // console.log(input, 'input', id);
 
+    const {
+      image,
+      content,
+      title,
+      lat,
+      long,
+      district,
+      province,
+      tags,
+      subtitle,
+      address,
+    } = input;
+    try {
       delete input.image;
 
       const post = await this.prisma.apartment.create({
         data: {
-          ownerId: id,
+          ownerId: +id,
           address,
           subtitle,
           title,
@@ -109,14 +110,14 @@ export class PostService {
   async getListApartment(input: GetListApartmentDto, ownerId: number) {
     const whereOption = {};
     if (!!input.search) {
-      console.log(input.search);
+      // console.log(input.search);
 
       whereOption['title'] = {
         contains: input.search,
         mode: 'insensitive',
       };
     }
-    console.log(whereOption);
+    // console.log(whereOption);
 
     const count = await this.prisma.apartment.count({
       where: {

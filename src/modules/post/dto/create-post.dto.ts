@@ -7,8 +7,8 @@ export class CreateApartmentDto {
   address: string;
   lat: number;
   long: number;
-  district: string;
-  province: string;
+  district?: string;
+  province?: string;
   image: string[];
   tags: number[];
 }
