@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
-import { GetListApartmentDto } from './dto/get-post.dto';
+import { GetListApartmentDto, GetRoomListDto } from './dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 @Injectable()
 export class PostService {
@@ -167,17 +167,27 @@ export class PostService {
     }
   }
 
-  async getRoomsInApartment(apartmentId: number) {
+  async getRoomsInApartment(apartmentId: number, input: GetRoomListDto) {
+    const total = await this.prisma.room.count({
+      where: {
+        apartmentId: +apartmentId,
+        title: input.search,
+      },
+    });
     const data = await this.prisma.room.findMany({
       where: {
         apartmentId: +apartmentId,
+        title: input.search,
       },
+      skip: +input.page_index * +input.page_size,
+      take: +input.page_size,
       include: {
         TagsInRoom: true,
       },
     });
     return {
       data,
+      total,
     };
   }
 

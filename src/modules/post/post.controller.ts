@@ -13,7 +13,7 @@ import { PostService } from './post.service';
 import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from 'src/decorator/auth';
-import { GetListApartmentDto } from './dto/get-post.dto';
+import { GetListApartmentDto, GetRoomListDto } from './dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 
 @Controller('post')
@@ -55,8 +55,8 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Get('/room-list/:id')
-  getRoomsInApartment(@Param('id') id: number) {
-    return this.postService.getRoomsInApartment(id);
+  getRoomsInApartment(@Param('id') id: number, @Query() input: GetRoomListDto) {
+    return this.postService.getRoomsInApartment(id, input);
   }
 
   @UseGuards(AuthGuard)
