@@ -73,7 +73,6 @@ export class PostService {
       maximum,
       living_room,
       bed_room,
-      floor,
       tags,
       area,
     } = input;
@@ -86,7 +85,7 @@ export class PostService {
           maximum,
           living_room,
           bed_room,
-          floor,
+          floor: title.charAt(0),
           area,
         },
       });
@@ -130,6 +129,9 @@ export class PostService {
         ownerId: ownerId,
         ...whereOption,
       },
+      include: {
+        rooms: true,
+      },
       take: +input.page_size,
       skip: +(input.page_size * input.page_index),
     });
@@ -168,16 +170,20 @@ export class PostService {
   }
 
   async getRoomsInApartment(apartmentId: number, input: GetRoomListDto) {
+    const whereOption = {};
+    if (!!input.search) {
+      whereOption['title'] = input.search;
+    }
     const total = await this.prisma.room.count({
       where: {
         apartmentId: +apartmentId,
-        title: input.search,
+        ...whereOption,
       },
     });
     const data = await this.prisma.room.findMany({
       where: {
         apartmentId: +apartmentId,
-        title: input.search,
+        ...whereOption,
       },
       skip: +input.page_index * +input.page_size,
       take: +input.page_size,
@@ -249,8 +255,7 @@ export class PostService {
   }
 
   async updateRoom(input: UpdateRoomDto) {
-    const { title, price, maximum, living_room, bed_room, floor, tags, area } =
-      input;
+    const { title, price, maximum, living_room, bed_room, tags, area } = input;
     try {
       const room = await this.prisma.room.update({
         where: {
@@ -262,7 +267,7 @@ export class PostService {
           maximum,
           living_room,
           bed_room,
-          floor,
+          floor: title.charAt(0),
           area,
         },
       });

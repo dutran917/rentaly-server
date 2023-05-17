@@ -6,9 +6,10 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PostModule } from './modules/post/post.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { RentalModule } from './modules/rental/rental.module';
 
 @Module({
-  imports: [ShareModule, UserModule, AuthModule, PostModule, CloudinaryModule],
+  imports: [ShareModule, UserModule, AuthModule, PostModule, CloudinaryModule, RentalModule],
   controllers: [AppController],
   providers: [AppService],
 })

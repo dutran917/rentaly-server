@@ -28,7 +28,7 @@ model Room {
   maximum     Int
   living_room Int          @default(1)
   bed_room    Int?
-  floor       Int?
+  floor       String?
   Apartment   Apartment    @relation(fields: [apartmentId], references: [id])
   apartmentId Int
   TagsInRoom  TagsInRoom[]

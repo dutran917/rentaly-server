@@ -22,7 +22,7 @@ export class CreateRoomDto {
   maximum: number;
   living_room: number;
   bed_room: number;
-  floor: number;
+  floor?: number;
   tags: number[];
   area: number;
 }
