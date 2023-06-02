@@ -1,26 +1,24 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
-  UseGuards,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { PostService } from './post.service';
+import { Auth, CurrentUser } from 'src/decorator/auth';
 import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
-import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from 'src/decorator/auth';
 import { GetListApartmentDto, GetRoomListDto } from './dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
+import { PostService } from './post.service';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Post('/apartment')
   createApartment(
     @Body() createPostDto: CreateApartmentDto,
@@ -29,13 +27,13 @@ export class PostController {
     return this.postService.createApartment(createPostDto, userId);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Post('/room')
   createRoom(@Body() input: CreateRoomDto) {
     return this.postService.createRoom(input);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Get('/apartment-list')
   getListApartment(
     @Query() query: GetListApartmentDto,
@@ -44,7 +42,7 @@ export class PostController {
     return this.postService.getListApartment(query, ownerId);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Get('/apartment/:id')
   getApartmentInfo(
     @Param('id') id: number,
@@ -53,19 +51,19 @@ export class PostController {
     return this.postService.getDetailApartment(id, ownerId);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Get('/room-list/:id')
   getRoomsInApartment(@Param('id') id: number, @Query() input: GetRoomListDto) {
     return this.postService.getRoomsInApartment(id, input);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Patch('/edit-apartment')
   updateApartment(@Body() input: UpdateApartmentDto) {
     return this.postService.updateApartment(input);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth('lessor')
   @Patch('/edit-room')
   updateRoom(@Body() input: UpdateRoomDto) {
     return this.postService.updateRoom(input);

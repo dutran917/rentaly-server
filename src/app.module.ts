@@ -7,9 +7,18 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PostModule } from './modules/post/post.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { RentalModule } from './modules/rental/rental.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ShareModule, UserModule, AuthModule, PostModule, CloudinaryModule, RentalModule],
+  imports: [
+    ShareModule,
+    UserModule,
+    AuthModule,
+    PostModule,
+    CloudinaryModule,
+    RentalModule,
+    ConfigModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
