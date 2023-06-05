@@ -21,7 +21,7 @@ export const CurrentUser = createParamDecorator(
 
 export const Auth = (...apis: role[]) => {
   return applyDecorators(
-    SetMetadata('roless', apis),
+    SetMetadata('roles', apis),
     UseGuards(UserGuard, RoleGuard),
   );
 };

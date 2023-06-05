@@ -12,12 +12,14 @@ export class UserService {
         data: {
           ...input,
           password: hashPash,
+          role: 'user',
         },
       });
       return {
         message: 'SUCCESS',
       };
     } catch (error) {
+      console.log(error);
       throw new Error(error);
     }
   }

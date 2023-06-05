@@ -8,6 +8,7 @@ import { PostModule } from './modules/post/post.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { RentalModule } from './modules/rental/rental.module';
 import { ConfigModule } from '@nestjs/config';
+import { LessorModule } from './modules/lessor/lessor.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     CloudinaryModule,
     RentalModule,
     ConfigModule,
+    LessorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
