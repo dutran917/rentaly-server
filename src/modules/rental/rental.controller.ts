@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Param } from '@nestjs/common';
 import { RentalService } from './rental.service';
-import { GetListRentalDto } from './dto/get-list-dto';
+import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
 
 @Controller('rental')
 export class RentalController {
@@ -14,5 +14,14 @@ export class RentalController {
   @Get('detail-apartment/:id')
   async userGetDetailApartment(@Param('id') id: number) {
     return this.rentalService.userGetDetailApartment(+id);
+  }
+
+  @Get('list-room')
+  async userGetListRoomInApartment(@Query() input: GetListRoomDto) {
+    return this.rentalService.userGetListRoomInApartment(input);
+  }
+  @Get('room/:id')
+  async userGetRoomDetail(@Param('id') roomId: number) {
+    return this.rentalService.userGetRoomDetail(roomId);
   }
 }

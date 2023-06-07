@@ -1,4 +1,13 @@
-import { ExecutionContext, createParamDecorator } from '@nestjs/common';
+import {
+  ExecutionContext,
+  SetMetadata,
+  UseGuards,
+  applyDecorators,
+  createParamDecorator,
+} from '@nestjs/common';
+import { role } from '@prisma/client';
+import { UserGuard } from 'src/guards/auth.guard';
+import { RoleGuard } from 'src/guards/role.guard';
 
 export const CurrentUser = createParamDecorator(
   (data: any, context: ExecutionContext) => {
@@ -9,3 +18,10 @@ export const CurrentUser = createParamDecorator(
     return user;
   },
 );
+
+export const Auth = (...apis: role[]) => {
+  return applyDecorators(
+    SetMetadata('roles', apis),
+    UseGuards(UserGuard, RoleGuard),
+  );
+};

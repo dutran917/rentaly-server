@@ -15,12 +15,16 @@ datasource db {
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  password  String
-  email     String      @unique
-  full_name String?
-  phone     String?     @unique
-  apartment Apartment[]
+  id         Int          @id @default(autoincrement())
+  password   String
+  email      String       @unique
+  full_name  String?
+  phone      String?      @unique
+  role       role         @default(user)
+  status     Boolean      @default(true)
+  verified   Boolean      @default(false)
+  apartment  Apartment[]
+  RoomRenter RoomRenter[]
 }
 
 model Room {
@@ -36,6 +40,18 @@ model Room {
   Apartment   Apartment    @relation(fields: [apartmentId], references: [id])
   apartmentId Int
   TagsInRoom  TagsInRoom[]
+  RoomRenter  RoomRenter[]
+}
+
+model RoomRenter {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [user_id], references: [id])
+  user_id  Int
+  room     Room      @relation(fields: [room_id], references: [id])
+  room_id  Int
+  price    Int //Ca chu ky
+  start_at DateTime  @default(now())
+  end_at   DateTime?
 }
 
 model Apartment {
@@ -95,4 +111,10 @@ model image {
   url         String
   apartment   Apartment @relation(fields: [apartmentId], references: [id])
   apartmentId Int
+}
+
+enum role {
+  user
+  lessor
+  admin
 }

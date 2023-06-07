@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
-import { GetListRentalDto } from './dto/get-list-dto';
+import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
 
 @Injectable()
 export class RentalService {
@@ -63,10 +63,40 @@ export class RentalService {
       },
       include: {
         image: true,
-        rooms: true,
+        rooms: {
+          include: {
+            TagsInRoom: true,
+          },
+        },
         TagsInApartment: true,
       },
     });
     return data;
+  }
+
+  async userGetListRoomInApartment(input: GetListRoomDto) {
+    const rooms = await this.prisma.room.findMany({
+      where: {
+        apartmentId: +input.apartmentId,
+        bed_room: +input.bed_room,
+        living_room: +input.living_room,
+      },
+      include: {
+        TagsInRoom: true,
+      },
+    });
+
+    return {
+      data: rooms,
+    };
+  }
+
+  async userGetRoomDetail(roomId: number) {
+    const room = await this.prisma.room.findUnique({
+      where: {
+        id: +roomId,
+      },
+    });
+    return room;
   }
 }
