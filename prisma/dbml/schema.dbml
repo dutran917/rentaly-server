@@ -1,0 +1,130 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  password String [not null]
+  email String [unique, not null]
+  full_name String
+  phone String [unique]
+  role role [not null, default: 'user']
+  status Boolean [not null, default: true]
+  verified Boolean [not null, default: false]
+  apartment Apartment [not null]
+  RoomRenter RoomRenter [not null]
+}
+
+Table Room {
+  id Int [pk, increment]
+  title String [not null]
+  content String
+  price Int [not null]
+  area Float [not null]
+  maximum Int [not null]
+  living_room Int [not null, default: 1]
+  bed_room Int
+  floor String
+  Apartment Apartment [not null]
+  apartmentId Int [not null]
+  TagsInRoom TagsInRoom [not null]
+  RoomRenter RoomRenter [not null]
+}
+
+Table RoomRenter {
+  id Int [pk, increment]
+  user User [not null]
+  user_id Int [not null]
+  room Room [not null]
+  room_id Int [not null]
+  price Int [not null]
+  start_at DateTime [default: `now()`, not null]
+  end_at DateTime
+}
+
+Table Apartment {
+  id Int [pk, increment]
+  title String [not null]
+  subtitle String [not null]
+  content String
+  published Boolean [default: false]
+  owner User [not null]
+  ownerId Int [not null]
+  address String [not null]
+  lat Float [not null]
+  long Float [not null]
+  district String [not null]
+  province String [not null]
+  rooms Room [not null]
+  TagsInApartment TagsInApartment [not null]
+  image image [not null]
+}
+
+Table TagsInApartment {
+  apartment Apartment [not null]
+  apartmentId Int [not null]
+  tag ApartmentTag [not null]
+  apartmentTagId Int [not null]
+
+  indexes {
+    (apartmentId, apartmentTagId) [pk]
+  }
+}
+
+Table TagsInRoom {
+  room Room [not null]
+  tag RoomTag [not null]
+  roomId Int [not null]
+  roomTagId Int [not null]
+
+  indexes {
+    (roomId, roomTagId) [pk]
+  }
+}
+
+Table ApartmentTag {
+  id Int [pk, increment]
+  name String [unique, not null]
+  icon String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  TagsInApartment TagsInApartment [not null]
+}
+
+Table RoomTag {
+  id Int [pk, increment]
+  name String [unique, not null]
+  icon String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  TagsInRoom TagsInRoom [not null]
+}
+
+Table image {
+  id Int [pk, increment]
+  url String [not null]
+  apartment Apartment [not null]
+  apartmentId Int [not null]
+}
+
+Enum role {
+  user
+  lessor
+  admin
+}
+
+Ref: Room.apartmentId > Apartment.id
+
+Ref: RoomRenter.user_id > User.id
+
+Ref: RoomRenter.room_id > Room.id
+
+Ref: Apartment.ownerId > User.id
+
+Ref: TagsInApartment.apartmentId > Apartment.id
+
+Ref: TagsInApartment.apartmentTagId > ApartmentTag.id
+
+Ref: TagsInRoom.roomId > Room.id
+
+Ref: TagsInRoom.roomTagId > RoomTag.id
+
+Ref: image.apartmentId > Apartment.id

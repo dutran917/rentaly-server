@@ -9,6 +9,8 @@ export class UserController {
   @Get('/info-user')
   @Auth('lessor')
   async getInfoUser(@CurrentUser('id') userId) {
+    console.log(userId);
+
     return await this.userService.getInfoUser(userId);
   }
   // @Post('/create-post')

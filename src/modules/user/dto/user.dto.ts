@@ -5,6 +5,8 @@ export class UserRegisterInput {
   email: string;
   @IsNotEmpty()
   password: string;
+  @IsNotEmpty()
+  role: 'user' | 'lessor' | 'admin';
   phone: string;
   full_name: string;
 }

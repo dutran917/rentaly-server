@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { UserLoginInput, UserRegisterInput } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
@@ -12,7 +12,7 @@ export class UserService {
         data: {
           ...input,
           password: hashPash,
-          role: 'user',
+          role: input.role,
         },
       });
       return {
@@ -20,7 +20,7 @@ export class UserService {
       };
     } catch (error) {
       console.log(error);
-      throw new Error(error);
+      throw new BadRequestException(error);
     }
   }
 
