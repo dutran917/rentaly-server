@@ -1,13 +1,16 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { role } from '@prisma/client';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class UserRegisterInput {
+  @IsEmail()
   @IsNotEmpty()
   email: string;
   @IsNotEmpty()
+  @IsString()
   password: string;
   @IsNotEmpty()
-  role: 'user' | 'lessor' | 'admin';
-  phone: string;
+  role: role;
+  phone?: string;
   full_name: string;
 }
 

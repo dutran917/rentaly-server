@@ -63,12 +63,12 @@ export class RentalService {
       },
       include: {
         image: true,
-        rooms: {
+        rooms: true,
+        TagsInApartment: {
           include: {
-            TagsInRoom: true,
+            tag: true,
           },
         },
-        TagsInApartment: true,
       },
     });
     return data;
@@ -95,6 +95,13 @@ export class RentalService {
     const room = await this.prisma.room.findUnique({
       where: {
         id: +roomId,
+      },
+      include: {
+        TagsInRoom: {
+          include: {
+            tag: true,
+          },
+        },
       },
     });
     return room;

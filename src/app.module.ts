@@ -9,6 +9,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { RentalModule } from './modules/rental/rental.module';
 import { ConfigModule } from '@nestjs/config';
 import { LessorModule } from './modules/lessor/lessor.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { LessorModule } from './modules/lessor/lessor.module';
     LessorModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}
