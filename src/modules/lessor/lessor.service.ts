@@ -25,6 +25,4 @@ export class LessorService {
       throw new Error(error);
     }
   }
-
- 
 }

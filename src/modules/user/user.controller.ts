@@ -7,7 +7,7 @@ import { Auth, CurrentUser } from 'src/decorator/auth';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('/info-user')
-  @Auth('lessor')
+  @Auth('user')
   async getInfoUser(@CurrentUser('id') userId) {
     console.log(userId);
 
