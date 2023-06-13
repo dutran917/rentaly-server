@@ -15,8 +15,16 @@ export class AuthController {
     return this.userService.createUser(input);
   }
 
-  @Post('/login')
-  login(@Body() input: UserLoginInput) {
-    return this.authService.signIn(input);
+  @Post('/lessor-login')
+  loginLessor(@Body() input: UserLoginInput) {
+    return this.authService.loginLessor(input);
+  }
+  @Post('/user-login')
+  loginUser(@Body() input: UserLoginInput) {
+    return this.authService.loginUser(input);
+  }
+  @Post('/admin-login')
+  loginAdmin(@Body() input: UserLoginInput) {
+    return this.authService.loginAdmin(input);
   }
 }

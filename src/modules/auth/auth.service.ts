@@ -15,7 +15,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async signIn(input: UserLoginInput) {
+  async loginLessor(input: UserLoginInput) {
     const { username, password } = input;
     const user = await this.prisma.user.findUnique({
       where: {
@@ -28,6 +28,62 @@ export class AuthService {
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
+      throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    if (user.role === 'lessor') {
+      if (!user.verified) {
+        throw new BadRequestException('NOT VERIFIED');
+      }
+      delete user['password'];
+      return {
+        ...user,
+        accessToken: this.generateToken(user.id),
+      };
+    }
+    throw new UnauthorizedException('WRONG_CREDENTIALS');
+  }
+
+  async loginUser(input: UserLoginInput) {
+    const { username, password } = input;
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: username,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    if (user.role === 'user') {
+      delete user['password'];
+      return {
+        ...user,
+        accessToken: this.generateToken(user.id),
+      };
+    }
+    throw new UnauthorizedException('WRONG_CREDENTIALS');
+  }
+
+  async loginAdmin(input: UserLoginInput) {
+    const { username, password } = input;
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: username,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    if (user.role !== 'admin') {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
     }
     delete user['password'];
