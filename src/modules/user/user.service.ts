@@ -7,9 +7,9 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   async createUser(input: UserRegisterInput) {
     try {
-      if (input.role === 'admin') {
-        throw new BadRequestException('CANNOT_CREATE');
-      }
+      // if (input.role === 'admin') {
+      //   throw new BadRequestException('CANNOT_CREATE');
+      // }
       const hashPash = await bcrypt.hash(input.password, 10);
       await this.prisma.user.create({
         data: {
