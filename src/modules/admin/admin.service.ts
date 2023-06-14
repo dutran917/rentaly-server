@@ -3,11 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { ApproveLessorInput } from './dto/manage-lessor.dto';
 import { PrismaService } from '../share/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AdminService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
   ) {}
   async adminApproveLessor(input: ApproveLessorInput) {
     try {
@@ -32,8 +34,7 @@ export class AdminService {
           },
         });
         await this.mailerService.sendMail({
-          to: input.email,
-          from: 'rentaly@gmail.com',
+          to: lessor.email,
           subject: 'Xác nhận đăng ký chủ nhà trọ',
           html: `<div>
                   <h1>
@@ -45,7 +46,7 @@ export class AdminService {
                     sau:
                   </p>
                   <a
-                    href="http://localhost:3000/manager"
+                    href="${this.config.get('CLIENT_PAGE') + '/manager'}"
                     target="_blank"
                     >Trang quản lý nhà trọ</a
                   >
@@ -56,8 +57,7 @@ export class AdminService {
       }
       if (!input.accept && !!lessor) {
         await this.mailerService.sendMail({
-          to: input.email,
-          from: 'rentaly@gmail.com',
+          to: lessor.email,
           subject: 'Từ chối đơn đăng ký',
           html: `<div>
                     Tài khoản của bạn chưa đủ điều kiện để trở thành chủ nhà trọ của Rentaly.
