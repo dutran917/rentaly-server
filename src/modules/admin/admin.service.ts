@@ -76,6 +76,7 @@ export class AdminService {
           subject: 'Từ chối đơn đăng ký',
           html: `<div>
                     Tài khoản của bạn chưa đủ điều kiện để trở thành chủ nhà trọ của Rentaly.
+                    <p>Lý do: ${input.reason}</p>
                       <p>Mọi thắc mắc xin liên hệ tại đường dây nóng: <b>0399513456</b></p>
   
                   </div>`,
@@ -101,6 +102,9 @@ export class AdminService {
         where: {
           role: 'lessor',
           ...where,
+        },
+        include: {
+          apartment: true,
         },
         take: +input.page_size,
         skip: +(input.page_size * input.page_index),

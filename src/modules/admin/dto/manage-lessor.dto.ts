@@ -1,3 +1,4 @@
+import { VERIFY_STATUS } from '@prisma/client';
 import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class ApproveLessorInput {
@@ -17,5 +18,5 @@ export class ListRegisterLessorInput {
   @IsNumber()
   page_index: number;
   @IsOptional()
-  verified: boolean;
+  verified: VERIFY_STATUS;
 }
