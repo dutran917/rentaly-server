@@ -40,6 +40,7 @@ export class RentalService {
     });
     const data = await this.prisma.apartment.findMany({
       where: {
+        verified: 'ACCEPT',
         ...whereOption,
       },
       take: +input.page_size,
