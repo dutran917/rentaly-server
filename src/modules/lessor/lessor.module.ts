@@ -7,5 +7,6 @@ import { UserModule } from '../user/user.module';
   controllers: [LessorController],
   providers: [LessorService],
   imports: [UserModule],
+  exports: [LessorService],
 })
 export class LessorModule {}

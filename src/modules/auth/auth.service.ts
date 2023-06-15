@@ -31,7 +31,7 @@ export class AuthService {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
     }
     if (user.role === 'lessor') {
-      if (!user.verified) {
+      if (user.verified !== 'ACCEPT') {
         throw new BadRequestException('NOT VERIFIED');
       }
       delete user['password'];

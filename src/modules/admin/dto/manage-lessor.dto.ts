@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class ApproveLessorInput {
   @IsNotEmpty()
@@ -7,4 +7,15 @@ export class ApproveLessorInput {
   accept: boolean;
   @IsOptional()
   reason: string;
+}
+
+export class ListRegisterLessorInput {
+  @IsNotEmpty()
+  @IsNumber()
+  page_size: number;
+  @IsNotEmpty()
+  @IsNumber()
+  page_index: number;
+  @IsOptional()
+  verified: boolean;
 }

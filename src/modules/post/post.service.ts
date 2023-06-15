@@ -142,7 +142,7 @@ export class PostService {
     };
   }
 
-  async getDetailApartment(apartmentId: number, ownerId: number) {
+  async getDetailApartment(apartmentId: number, ownerId?: number) {
     try {
       const apartment = await this.prisma.apartment.findUnique({
         where: {
@@ -157,7 +157,7 @@ export class PostService {
       if (!apartment) {
         throw new BadRequestException('NOT_FOUND');
       }
-      if (apartment.ownerId !== ownerId) {
+      if (ownerId && apartment.ownerId !== ownerId) {
         throw new BadRequestException('INVALID_OWNER');
       }
 

@@ -1,9 +1,16 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { ApproveLessorInput } from './dto/manage-lessor.dto';
+import {
+  ApproveLessorInput,
+  ListRegisterLessorInput,
+} from './dto/manage-lessor.dto';
 import { PrismaService } from '../share/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import {
+  ApproveApartmentInput,
+  GetListApartmentInput,
+} from './dto/manage-apartment';
 @Injectable()
 export class AdminService {
   constructor(
@@ -18,7 +25,7 @@ export class AdminService {
           id: +input.lessor_id,
         },
       });
-      if (!lessor) {
+      if (!lessor || lessor.role !== 'lessor') {
         return 'CANNOT FIND ID LESSOR';
       }
       if (input.accept && !!lessor) {
@@ -30,7 +37,7 @@ export class AdminService {
           },
           data: {
             password: hashPash,
-            verified: true,
+            verified: 'ACCEPT',
           },
         });
         await this.mailerService.sendMail({
@@ -56,6 +63,14 @@ export class AdminService {
         });
       }
       if (!input.accept && !!lessor) {
+        await this.prisma.user.update({
+          where: {
+            id: lessor.id,
+          },
+          data: {
+            verified: 'REFUSE',
+          },
+        });
         await this.mailerService.sendMail({
           to: lessor.email,
           subject: 'Từ chối đơn đăng ký',
@@ -72,5 +87,119 @@ export class AdminService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  async getListRegisterLessor(input: ListRegisterLessorInput) {
+    let where = {};
+    if (!!input.verified) {
+      where = {
+        verified: input.verified,
+      };
+    }
+    const [data, total] = [
+      await this.prisma.user.findMany({
+        where: {
+          role: 'lessor',
+          ...where,
+        },
+        take: +input.page_size,
+        skip: +(input.page_size * input.page_index),
+      }),
+      await this.prisma.user.count({
+        where: {
+          role: 'lessor',
+          ...where,
+        },
+      }),
+    ];
+
+    return {
+      data: data.map((item) => {
+        delete item['password'];
+        return {
+          ...item,
+        };
+      }),
+      total,
+    };
+  }
+
+  async getDetailLessor(idLessor: number) {
+    const lessor = await this.prisma.user.findUnique({
+      where: {
+        id: +idLessor,
+      },
+      include: {
+        apartment: {
+          include: {
+            rooms: true,
+          },
+        },
+      },
+    });
+    return {
+      data: lessor,
+    };
+  }
+
+  async getListApartment(input: GetListApartmentInput) {
+    const where = {};
+    if (!!input.search) {
+      where['address'] = {
+        mode: 'insensitive',
+        contains: input.search,
+      };
+    }
+    if (!!input.district) {
+      where['district'] = input.district;
+    }
+    if (!!input.verified) {
+      where['verified'] = input.verified;
+    }
+    const data = this.prisma.apartment.findMany({
+      where: {
+        ...where,
+      },
+      include: {
+        rooms: true,
+      },
+      take: +input.page_size,
+      skip: +(input.page_size * input.page_index),
+    });
+    const total = this.prisma.apartment.count({
+      where: {
+        ...where,
+      },
+    });
+
+    return {
+      data,
+      total,
+    };
+  }
+
+  async approveApartment(input: ApproveApartmentInput) {
+    const apartment = await this.prisma.apartment.findUnique({
+      where: {
+        id: +input.apartmentId,
+      },
+    });
+    if (!apartment) {
+      throw new Error('NOT FOUND APARTMENT');
+    }
+    if (apartment.verified !== 'PENDING') {
+      throw new Error('VERIFIED');
+    }
+    await this.prisma.apartment.update({
+      where: {
+        id: apartment.id,
+      },
+      data: {
+        verified: input.approve ? 'ACCEPT' : 'REFUSE',
+      },
+    });
+    return {
+      message: 'SUCCESS',
+    };
   }
 }

@@ -18,7 +18,7 @@ export class LessorController {
 
   @Get('/info-manager')
   @Auth('lessor')
-  async getInfoUser(@CurrentUser('id') userId) {
+  async getInfoLessor(@CurrentUser('id') userId) {
     console.log(userId);
 
     return await this.userService.getInfoUser(userId);

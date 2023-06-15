@@ -10,7 +10,7 @@ Table User {
   phone String [unique]
   role role [not null, default: 'user']
   status Boolean [not null, default: true]
-  verified Boolean [not null, default: false]
+  verified VERIFY_STATUS [not null, default: 'PENDING']
   apartment Apartment [not null]
   RoomRenter RoomRenter [not null]
 }
@@ -48,6 +48,7 @@ Table Apartment {
   subtitle String [not null]
   content String
   published Boolean [default: false]
+  verified VERIFY_STATUS [not null, default: 'PENDING']
   owner User [not null]
   ownerId Int [not null]
   address String [not null]
@@ -109,6 +110,12 @@ Enum role {
   user
   lessor
   admin
+}
+
+Enum VERIFY_STATUS {
+  PENDING
+  ACCEPT
+  REFUSE
 }
 
 Ref: Room.apartmentId > Apartment.id

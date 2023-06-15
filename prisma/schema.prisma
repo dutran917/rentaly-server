@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   password   String
-  email      String       @unique
+  email      String        @unique
   full_name  String?
-  phone      String?      @unique
-  role       role         @default(user)
-  status     Boolean      @default(true)
-  verified   Boolean      @default(false)
+  phone      String?       @unique
+  role       role          @default(user)
+  status     Boolean       @default(true)
+  verified   VERIFY_STATUS @default(PENDING)
   apartment  Apartment[]
   RoomRenter RoomRenter[]
 }
@@ -60,6 +60,7 @@ model Apartment {
   subtitle        String
   content         String?
   published       Boolean?          @default(false)
+  verified        VERIFY_STATUS     @default(PENDING)
   owner           User              @relation(fields: [ownerId], references: [id])
   ownerId         Int
   address         String
@@ -117,4 +118,10 @@ enum role {
   user
   lessor
   admin
+}
+
+enum VERIFY_STATUS {
+  PENDING
+  ACCEPT
+  REFUSE
 }
