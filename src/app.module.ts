@@ -31,6 +31,9 @@ import { AdminModule } from './modules/admin/admin.module';
           pass: process.env.SMTP_PASSWORD,
         },
       },
+      defaults: {
+        from: `"Rentaly" <${process.env.MAIL_FROM}>`,
+      },
     }),
     AdminModule,
   ],

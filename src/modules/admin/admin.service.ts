@@ -51,7 +51,7 @@ export class AdminService {
                     >Trang quản lý nhà trọ</a
                   >
                   <p><b>Tài khoản:</b> Email bạn đã đăng ký</p>
-                  <p><b>Mật khẩu:</b>${randomPassword}}</p>
+                  <p><b>Mật khẩu:</b>${randomPassword}</p>
                 </div>`,
         });
       }
