@@ -85,7 +85,7 @@ export class AdminController {
 
   @Post('/approve-apartment')
   @Auth('admin')
-  async approveApartment(@Query() input: ApproveApartmentInput) {
+  async approveApartment(@Body() input: ApproveApartmentInput) {
     return await this.adminService.approveApartment(input);
   }
 }

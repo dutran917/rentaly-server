@@ -204,7 +204,17 @@ export class PostService {
     //   }
     // })
     try {
-      const { title, subtitle, content, image, tags } = input;
+      const {
+        title,
+        subtitle,
+        content,
+        image,
+        tags,
+        district,
+        lat,
+        long,
+        address,
+      } = input;
       await this.prisma.apartment.update({
         where: {
           id: input.apartmentId,
@@ -213,6 +223,10 @@ export class PostService {
           title,
           subtitle,
           content,
+          district,
+          lat,
+          long,
+          address,
         },
       });
       if (!!image?.length) {

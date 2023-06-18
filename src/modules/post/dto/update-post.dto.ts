@@ -8,6 +8,10 @@ export class UpdateApartmentDto {
   content: string;
   image: string[];
   tags: number[];
+  lat: number;
+  long: number;
+  district: string;
+  address: string;
 }
 
 export class UpdateRoomDto {

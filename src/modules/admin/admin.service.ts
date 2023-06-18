@@ -160,7 +160,7 @@ export class AdminService {
     if (!!input.verified) {
       where['verified'] = input.verified;
     }
-    const data = this.prisma.apartment.findMany({
+    const data = await this.prisma.apartment.findMany({
       where: {
         ...where,
       },
@@ -170,7 +170,7 @@ export class AdminService {
       take: +input.page_size,
       skip: +(input.page_size * input.page_index),
     });
-    const total = this.prisma.apartment.count({
+    const total = await this.prisma.apartment.count({
       where: {
         ...where,
       },
