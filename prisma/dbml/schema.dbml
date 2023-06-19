@@ -29,6 +29,7 @@ Table Room {
   apartmentId Int [not null]
   TagsInRoom TagsInRoom [not null]
   RoomRenter RoomRenter [not null]
+  Apointment Apointment [not null]
 }
 
 Table RoomRenter {
@@ -59,6 +60,19 @@ Table Apartment {
   rooms Room [not null]
   TagsInApartment TagsInApartment [not null]
   image image [not null]
+  Apointment Apointment [not null]
+}
+
+Table Apointment {
+  id Int [pk, increment]
+  fullName String [not null]
+  phone String [not null]
+  note String [not null]
+  date DateTime [not null]
+  roomId Int [not null]
+  room Room [not null]
+  Apartment Apartment
+  apartmentId Int [not null]
 }
 
 Table TagsInApartment {
@@ -125,6 +139,10 @@ Ref: RoomRenter.user_id > User.id
 Ref: RoomRenter.room_id > Room.id
 
 Ref: Apartment.ownerId > User.id
+
+Ref: Apointment.roomId > Room.id
+
+Ref: Apointment.apartmentId > Apartment.id
 
 Ref: TagsInApartment.apartmentId > Apartment.id
 

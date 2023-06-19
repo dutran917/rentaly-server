@@ -41,6 +41,7 @@ model Room {
   apartmentId Int
   TagsInRoom  TagsInRoom[]
   RoomRenter  RoomRenter[]
+  Apointment  Apointment[]
 }
 
 model RoomRenter {
@@ -71,6 +72,19 @@ model Apartment {
   rooms           Room[]
   TagsInApartment TagsInApartment[]
   image           image[]
+  Apointment      Apointment[]
+}
+
+model Apointment {
+  id          Int        @id @default(autoincrement())
+  fullName    String
+  phone       String
+  note        String
+  date        DateTime
+  roomId      Int
+  room        Room       @relation(fields: [roomId], references: [id])
+  Apartment   Apartment? @relation(fields: [apartmentId], references: [id])
+  apartmentId Int
 }
 
 model TagsInApartment {

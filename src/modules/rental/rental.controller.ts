@@ -1,6 +1,7 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query, Param, Body, Post } from '@nestjs/common';
 import { RentalService } from './rental.service';
 import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
+import { CreateApointmentInput } from './dto/create-apointment.dto';
 
 @Controller('rental')
 export class RentalController {
@@ -23,5 +24,10 @@ export class RentalController {
   @Get('room/:id')
   async userGetRoomDetail(@Param('id') roomId: number) {
     return this.rentalService.userGetRoomDetail(roomId);
+  }
+
+  @Post('apointment')
+  async createApointment(@Body() input: CreateApointmentInput) {
+    return await this.rentalService.createApointment(input);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
+import { CreateApointmentInput } from './dto/create-apointment.dto';
 
 @Injectable()
 export class RentalService {
@@ -106,5 +107,25 @@ export class RentalService {
       },
     });
     return room;
+  }
+
+  async createApointment(input: CreateApointmentInput) {
+    try {
+      await this.prisma.apointment.create({
+        data: {
+          fullName: input.fullName,
+          date: input.date,
+          phone: input.phone,
+          roomId: +input.roomId,
+          note: input.note,
+          apartmentId: +input.apartmentId,
+        },
+      });
+      return {
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
