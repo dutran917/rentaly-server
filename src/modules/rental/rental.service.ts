@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
 import { CreateApointmentInput } from './dto/create-apointment.dto';
-
+import { calculateDistance } from 'src/utils/common';
+import * as ListUniversity from '../../utils/University.json';
 @Injectable()
 export class RentalService {
   constructor(private readonly prisma: PrismaService) {}
@@ -16,7 +17,10 @@ export class RentalService {
       };
     }
     if (!!input.district) {
-      whereOption['district'] = input.district;
+      whereOption['district'] = {
+        mode: 'insensitive',
+        contains: input.district,
+      };
     }
     if (!!input.price) {
       whereOption['rooms'] = {
@@ -36,10 +40,11 @@ export class RentalService {
         },
       };
     }
-    const total = await this.prisma.apartment.count({
+
+    let total = await this.prisma.apartment.count({
       where: whereOption,
     });
-    const data = await this.prisma.apartment.findMany({
+    let data = await this.prisma.apartment.findMany({
       where: {
         verified: 'ACCEPT',
         ...whereOption,
@@ -51,6 +56,20 @@ export class RentalService {
         image: true,
       },
     });
+    const { lat, long } = {
+      lat: +input.lat,
+      long: +input.long,
+    };
+    if (!!lat && !!long) {
+      data = data.filter((item) => {
+        const distance = calculateDistance(lat, long, item.lat, item.long);
+        if (distance < 2000) {
+          return item;
+        }
+        return null;
+      });
+      total = data.length;
+    }
 
     return {
       data,
@@ -124,6 +143,33 @@ export class RentalService {
       return {
         message: 'SUCCESS',
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getListUniversity() {
+    try {
+      const data = Promise.all(
+        ListUniversity.map(async (item) => {
+          const listApartment = await this.prisma.apartment.findMany({});
+          const result = listApartment.filter((apartment) => {
+            const distance = calculateDistance(
+              item.lat,
+              item.long,
+              apartment.lat,
+              apartment.long,
+            );
+            return distance < 2000;
+          });
+          console.log(result);
+
+          return {
+            ...item,
+            count: result.length,
+          };
+        }),
+      );
+      return data;
     } catch (error) {
       throw error;
     }

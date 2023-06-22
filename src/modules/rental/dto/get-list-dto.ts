@@ -6,6 +6,8 @@ export class GetListRentalDto {
   price: number[];
   bed_room: number;
   living_room: number;
+  lat?: number;
+  long?: number;
 }
 export class GetListRoomDto {
   apartmentId: number;

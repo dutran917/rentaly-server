@@ -308,6 +308,15 @@ export class PostService {
     }
   }
 
+  async getAllApartment(ownerId: number) {
+    const data = await this.prisma.apartment.findMany({
+      where: {
+        ownerId: ownerId,
+      },
+    });
+    return data;
+  }
+
   async getApartmentTag() {
     return await this.prisma.apartmentTag.findMany({});
   }

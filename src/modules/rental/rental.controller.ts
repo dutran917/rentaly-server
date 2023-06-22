@@ -30,4 +30,8 @@ export class RentalController {
   async createApointment(@Body() input: CreateApointmentInput) {
     return await this.rentalService.createApointment(input);
   }
+  @Get('list-university')
+  async getListUniversity() {
+    return await this.rentalService.getListUniversity();
+  }
 }

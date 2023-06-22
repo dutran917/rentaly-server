@@ -45,9 +45,16 @@ export class AuthService {
 
   async loginUser(input: UserLoginInput) {
     const { username, password } = input;
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
-        email: username,
+        OR: [
+          {
+            email: username,
+          },
+          {
+            phone: username,
+          },
+        ],
       },
     });
 

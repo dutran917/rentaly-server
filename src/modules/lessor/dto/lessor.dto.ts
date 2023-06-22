@@ -1,4 +1,4 @@
-import { IsNotEmpty, isNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, isNotEmpty } from 'class-validator';
 
 export class LessorRegisterInput {
   @IsNotEmpty()
@@ -9,4 +9,17 @@ export class LessorRegisterInput {
   fullname: string;
   @IsNotEmpty()
   password: string;
+}
+
+export class ListApointmentInput {
+  @IsNotEmpty()
+  page_size: number;
+  @IsNotEmpty()
+  page_index: number;
+  @IsOptional()
+  time_start: string;
+  @IsOptional()
+  time_end: string;
+  @IsOptional()
+  apartmentId: number;
 }

@@ -6,7 +6,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { Auth, CurrentUser } from 'src/decorator/auth';
 import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
@@ -24,13 +23,19 @@ export class PostController {
     @Body() createPostDto: CreateApartmentDto,
     @CurrentUser('id') userId: number,
   ) {
-    return this.postService.createApartment(createPostDto, userId);
+    return this.postService.createApartment(createPostDto, +userId);
   }
 
   @Auth('lessor')
   @Post('/room')
   createRoom(@Body() input: CreateRoomDto) {
     return this.postService.createRoom(input);
+  }
+
+  @Auth('lessor')
+  @Get('/all-apartment')
+  getAllApartment(@CurrentUser('id') ownerId) {
+    return this.postService.getAllApartment(+ownerId);
   }
 
   @Auth('lessor')
