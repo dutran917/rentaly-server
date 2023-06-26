@@ -11,7 +11,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
     credentials: true,
   };
-
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors(options);
   await app.listen(4000);
 }
