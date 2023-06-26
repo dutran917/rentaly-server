@@ -43,7 +43,10 @@ export class RentalService {
     }
 
     let total = await this.prisma.apartment.count({
-      where: whereOption,
+      where: {
+        verified: 'ACCEPT',
+        ...whereOption,
+      },
     });
     let data = await this.prisma.apartment.findMany({
       where: {
