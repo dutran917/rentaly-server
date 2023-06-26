@@ -7,12 +7,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PostModule } from './modules/post/post.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { RentalModule } from './modules/rental/rental.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { LessorModule } from './modules/lessor/lessor.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { AdminModule } from './modules/admin/admin.module';
+import { PaymentModule } from './modules/payment/payment.module';
 @Module({
   imports: [
     ShareModule,
@@ -20,6 +20,7 @@ import { AdminModule } from './modules/admin/admin.module';
     AuthModule,
     PostModule,
     CloudinaryModule,
+    PaymentModule,
     RentalModule,
     ConfigModule,
     LessorModule,

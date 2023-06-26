@@ -76,15 +76,16 @@ model Apartment {
 }
 
 model Apointment {
-  id          Int        @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   fullName    String
   phone       String
   note        String
   date        DateTime
   roomId      Int
-  room        Room       @relation(fields: [roomId], references: [id])
-  Apartment   Apartment? @relation(fields: [apartmentId], references: [id])
+  room        Room          @relation(fields: [roomId], references: [id])
+  Apartment   Apartment?    @relation(fields: [apartmentId], references: [id])
   apartmentId Int
+  status      APOINT_STATUS @default(PENDING)
 }
 
 model TagsInApartment {
@@ -138,4 +139,10 @@ enum VERIFY_STATUS {
   PENDING
   ACCEPT
   REFUSE
+}
+
+enum APOINT_STATUS {
+  PENDING
+  SUCCESS
+  CANCEL
 }

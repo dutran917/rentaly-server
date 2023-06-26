@@ -73,6 +73,7 @@ Table Apointment {
   room Room [not null]
   Apartment Apartment
   apartmentId Int [not null]
+  status APOINT_STATUS [not null, default: 'PENDING']
 }
 
 Table TagsInApartment {
@@ -130,6 +131,12 @@ Enum VERIFY_STATUS {
   PENDING
   ACCEPT
   REFUSE
+}
+
+Enum APOINT_STATUS {
+  PENDING
+  SUCCESS
+  CANCEL
 }
 
 Ref: Room.apartmentId > Apartment.id

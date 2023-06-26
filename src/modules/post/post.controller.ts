@@ -19,11 +19,11 @@ export class PostController {
 
   @Auth('lessor')
   @Post('/apartment')
-  createApartment(
+  async createApartment(
     @Body() createPostDto: CreateApartmentDto,
     @CurrentUser('id') userId: number,
   ) {
-    return this.postService.createApartment(createPostDto, +userId);
+    return await this.postService.createApartment(createPostDto, userId);
   }
 
   @Auth('lessor')
@@ -56,6 +56,11 @@ export class PostController {
     return this.postService.getDetailApartment(id, ownerId);
   }
 
+  @Auth('lessor')
+  @Get('/room/:id')
+  getRoomInfo(@Param('id') roomId: number, @CurrentUser('id') ownerId: number) {
+    return this.postService.getRoomInfo(+roomId, +ownerId);
+  }
   @Auth('lessor')
   @Get('/room-list/:id')
   getRoomsInApartment(@Param('id') id: number, @Query() input: GetRoomListDto) {

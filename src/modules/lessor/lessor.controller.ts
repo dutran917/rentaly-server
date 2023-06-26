@@ -32,4 +32,10 @@ export class LessorController {
   ) {
     return await this.lessorService.getListApointment(+userId, input);
   }
+
+  @Auth('lessor')
+  @Post('/handle-apointment')
+  async handleApointment(@Body() input: { status: boolean; id: number }) {
+    return await this.lessorService.handleApointment(input);
+  }
 }

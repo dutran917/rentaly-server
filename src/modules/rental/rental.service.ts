@@ -4,6 +4,7 @@ import { GetListRentalDto, GetListRoomDto } from './dto/get-list-dto';
 import { CreateApointmentInput } from './dto/create-apointment.dto';
 import { calculateDistance } from 'src/utils/common';
 import * as ListUniversity from '../../utils/University.json';
+import * as moment from 'moment';
 @Injectable()
 export class RentalService {
   constructor(private readonly prisma: PrismaService) {}
@@ -78,13 +79,17 @@ export class RentalService {
   }
 
   async userGetDetailApartment(id: number) {
-    const data = this.prisma.apartment.findUnique({
+    const data = await this.prisma.apartment.findUnique({
       where: {
         id,
       },
       include: {
         image: true,
-        rooms: true,
+        rooms: {
+          include: {
+            RoomRenter: true,
+          },
+        },
         TagsInApartment: {
           include: {
             tag: true,
@@ -92,11 +97,29 @@ export class RentalService {
         },
       },
     });
-    return data;
+    const currentDate = new Date();
+    return {
+      ...data,
+      rooms: data.rooms.filter((room) => {
+        if (room.RoomRenter.length > 0) {
+          if (
+            moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
+              .toDate()
+              .getTime() < currentDate.getTime()
+          ) {
+            return room;
+          } else {
+            // console.log('hell no');
+          }
+        } else {
+          return room;
+        }
+      }),
+    };
   }
 
   async userGetListRoomInApartment(input: GetListRoomDto) {
-    const rooms = await this.prisma.room.findMany({
+    let rooms = await this.prisma.room.findMany({
       where: {
         apartmentId: +input.apartmentId,
         bed_room: +input.bed_room,
@@ -104,9 +127,23 @@ export class RentalService {
       },
       include: {
         TagsInRoom: true,
+        RoomRenter: true,
       },
     });
-
+    const currentDate = new Date();
+    rooms = rooms.filter((room) => {
+      if (room.RoomRenter.length > 0) {
+        if (
+          moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
+            .toDate()
+            .getTime() < currentDate.getTime()
+        ) {
+          return room;
+        }
+      } else {
+        return room;
+      }
+    });
     return {
       data: rooms,
     };
@@ -161,7 +198,6 @@ export class RentalService {
             );
             return distance < 2000;
           });
-          console.log(result);
 
           return {
             ...item,

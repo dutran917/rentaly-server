@@ -37,6 +37,8 @@
     "class-validator": "^0.14.0",
     "cloudinary": "^1.36.1",
     "handlebars": "^4.7.7",
+    "moment": "^2.29.4",
+    "node-vnpay": "^1.0.1",
     "nodemailer": "^6.9.3",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

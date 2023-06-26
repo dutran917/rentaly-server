@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { LessorRegisterInput, ListApointmentInput } from './dto/lessor.dto';
 import * as bcrypt from 'bcrypt';
+import { APOINT_STATUS } from '@prisma/client';
 @Injectable()
 export class LessorService {
   constructor(private readonly prisma: PrismaService) {}
@@ -81,5 +82,19 @@ export class LessorService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async handleApointment(input: { status: boolean; id: number }) {
+    await this.prisma.apointment.update({
+      where: {
+        id: +input.id,
+      },
+      data: {
+        status: input.status ? APOINT_STATUS.SUCCESS : APOINT_STATUS.CANCEL,
+      },
+    });
+    return {
+      message: 'SUCCESS',
+    };
   }
 }

@@ -3,10 +3,11 @@ import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
 import { GetListApartmentDto, GetRoomListDto } from './dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
+import * as moment from 'moment';
 @Injectable()
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
-  async createApartment(input: CreateApartmentDto, id: number) {
+  async createApartment(input: CreateApartmentDto, lessor_id: number) {
     // console.log(input, 'input', id);
 
     const {
@@ -23,18 +24,17 @@ export class PostService {
     } = input;
     try {
       delete input.image;
-
       const post = await this.prisma.apartment.create({
         data: {
-          ownerId: +id,
-          address,
-          subtitle,
-          title,
-          content,
-          lat,
-          long,
-          district,
-          province,
+          ownerId: Number(lessor_id),
+          address: address,
+          subtitle: subtitle,
+          title: title,
+          content: content,
+          lat: lat,
+          long: long,
+          district: district || 'unknown',
+          province: province,
         },
       });
 
@@ -142,6 +142,57 @@ export class PostService {
     };
   }
 
+  async getRoomInfo(roomId: number, ownerId: number) {
+    const room = await this.prisma.room.findUnique({
+      where: {
+        id: roomId,
+      },
+      include: {
+        Apartment: true,
+        TagsInRoom: true,
+      },
+    });
+    if (room.Apartment.ownerId !== ownerId) {
+      throw new Error('INVALID_ROOM');
+    }
+    const historyRent = await this.prisma.roomRenter.findMany({
+      where: {
+        room_id: roomId,
+      },
+      include: {
+        user: true,
+      },
+      orderBy: {
+        end_at: 'desc',
+      },
+    });
+    const currentDate = new Date();
+    const currentRent = historyRent.find(
+      (item) => moment(item.end_at).toDate().getTime() > currentDate.getTime(),
+    );
+    return {
+      ...room,
+      currentRent: currentRent
+        ? {
+            ...currentRent,
+            user: {
+              email: currentRent.user.email,
+              phone: currentRent.user.phone,
+              full_name: currentRent.user.full_name,
+            },
+          }
+        : null,
+      historyRent: historyRent.map((item) => ({
+        ...item,
+        user: {
+          email: item.user.email,
+          full_name: item.user.full_name,
+          phone: item.user.phone,
+        },
+      })),
+    };
+  }
+
   async getDetailApartment(apartmentId: number, ownerId?: number) {
     try {
       const apartment = await this.prisma.apartment.findUnique({
@@ -189,10 +240,23 @@ export class PostService {
       take: +input.page_size,
       include: {
         TagsInRoom: true,
+        RoomRenter: true,
       },
     });
+    const currentDate = new Date();
     return {
-      data,
+      data: data.map((item) => {
+        return {
+          ...item,
+          status:
+            item.RoomRenter.length > 0 &&
+            moment(item.RoomRenter[item.RoomRenter.length - 1].end_at)
+              .toDate()
+              .getTime() > currentDate.getTime()
+              ? 'RENTED'
+              : 'FREE',
+        };
+      }),
       total,
     };
   }

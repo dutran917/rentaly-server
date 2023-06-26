@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { UserLoginInput, UserRegisterInput } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
+import * as moment from 'moment';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -39,6 +40,74 @@ export class UserService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  async getHistoryRent(userId: number) {
+    const history = await this.prisma.roomRenter.findMany({
+      where: {
+        user_id: +userId,
+      },
+      distinct: ['room_id'],
+      include: {
+        room: {
+          include: {
+            Apartment: true,
+          },
+        },
+      },
+      orderBy: {
+        end_at: 'desc',
+      },
+    });
+    const currentDate = new Date();
+    return {
+      data: history.map((item) => {
+        let status;
+        if (moment(item.end_at).toDate().getTime() > currentDate.getTime()) {
+          status = 'RENTING';
+          if (
+            moment(item.end_at).subtract(10, 'd').toDate().getTime() <
+            currentDate.getTime()
+          ) {
+            status = 'EXPIRED_SOON';
+          }
+        }
+        if (moment(item.end_at).toDate().getTime() <= currentDate.getTime()) {
+          status = 'OUT_DATE';
+        }
+
+        return {
+          ...item,
+          status: status,
+        };
+      }),
+    };
+  }
+
+  async getApointment(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    const data = await this.prisma.apointment.findMany({
+      where: {
+        phone: user.phone,
+      },
+      include: {
+        room: true,
+        Apartment: true,
+      },
+    });
+    const total = await this.prisma.apointment.count({
+      where: {
+        phone: user.phone,
+      },
+    });
+    return {
+      data,
+      total,
+    };
   }
 
   async userCreatePost(input: UserLoginInput) {}
