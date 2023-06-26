@@ -191,7 +191,11 @@ export class RentalService {
     try {
       const data = Promise.all(
         ListUniversity.map(async (item) => {
-          const listApartment = await this.prisma.apartment.findMany({});
+          const listApartment = await this.prisma.apartment.findMany({
+            where: {
+              verified: 'ACCEPT',
+            },
+          });
           const result = listApartment.filter((apartment) => {
             const distance = calculateDistance(
               item.lat,

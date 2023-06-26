@@ -13,6 +13,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AdminModule } from './modules/admin/admin.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { StatisticModule } from './modules/statistic/statistic.module';
 @Module({
   imports: [
     ShareModule,
@@ -37,6 +38,7 @@ import { PaymentModule } from './modules/payment/payment.module';
       },
     }),
     AdminModule,
+    StatisticModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
