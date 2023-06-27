@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
-import { LessorRegisterInput, ListApointmentInput } from './dto/lessor.dto';
+import {
+  LessorRegisterInput,
+  ListApointmentInput,
+  UpdateInfoLessorInput,
+} from './dto/lessor.dto';
 import * as bcrypt from 'bcrypt';
 import { APOINT_STATUS } from '@prisma/client';
 @Injectable()
@@ -94,6 +98,47 @@ export class LessorService {
       },
     });
     return {
+      message: 'SUCCESS',
+    };
+  }
+
+  async updateInfoLessor(lessorId: number, input: UpdateInfoLessorInput) {
+    const lessor = await this.prisma.user.findUnique({
+      where: {
+        id: +lessorId,
+      },
+    });
+    if (!!input.full_name) {
+      await this.prisma.user.update({
+        where: {
+          id: lessor.id,
+        },
+        data: {
+          full_name: input.full_name,
+        },
+      });
+    }
+    if (!!input.password && !!input.old_password) {
+      const passwordMatch = await bcrypt.compare(
+        input.old_password,
+        lessor.password,
+      );
+      if (passwordMatch) {
+        const hashPash = await bcrypt.hash(input.password, 10);
+        await this.prisma.user.update({
+          where: {
+            id: lessorId,
+          },
+          data: {
+            password: hashPash,
+          },
+        });
+      } else {
+        throw new UnauthorizedException('WRONG_PASSWORD');
+      }
+    }
+    return {
+      full_name: input.full_name || lessor.full_name,
       message: 'SUCCESS',
     };
   }

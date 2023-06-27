@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { LessorService } from './lessor.service';
-import { LessorRegisterInput, ListApointmentInput } from './dto/lessor.dto';
+import {
+  LessorRegisterInput,
+  ListApointmentInput,
+  UpdateInfoLessorInput,
+} from './dto/lessor.dto';
 import { Auth, CurrentUser } from 'src/decorator/auth';
 import { UserService } from '../user/user.service';
 
@@ -22,6 +26,15 @@ export class LessorController {
     console.log(userId);
 
     return await this.userService.getInfoUser(userId);
+  }
+
+  @Post('/update-info')
+  @Auth('lessor')
+  async updateInfoLessor(
+    @CurrentUser('id') lessorId: number,
+    @Body() input: UpdateInfoLessorInput,
+  ) {
+    return await this.lessorService.updateInfoLessor(lessorId, input);
   }
 
   @Get('/list-apointment')

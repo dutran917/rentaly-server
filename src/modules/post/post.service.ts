@@ -130,7 +130,11 @@ export class PostService {
         ...whereOption,
       },
       include: {
-        rooms: true,
+        rooms: {
+          include: {
+            RoomRenter: true,
+          },
+        },
       },
       take: +input.page_size,
       skip: +(input.page_size * input.page_index),
@@ -138,7 +142,22 @@ export class PostService {
 
     return {
       total: count,
-      data,
+      data: data.map((item) => {
+        return {
+          ...item,
+          rented: item.rooms.filter((room) => {
+            if (room.RoomRenter.length > 0) {
+              const checkIsRent =
+                moment(room.RoomRenter[room.RoomRenter.length - 1].end_at)
+                  .toDate()
+                  .getTime() > new Date().getTime();
+              if (checkIsRent) {
+                return room;
+              }
+            }
+          }),
+        };
+      }),
     };
   }
 

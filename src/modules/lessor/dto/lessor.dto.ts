@@ -23,3 +23,12 @@ export class ListApointmentInput {
   @IsOptional()
   apartmentId: number;
 }
+
+export class UpdateInfoLessorInput {
+  @IsOptional()
+  full_name: string;
+  @IsOptional()
+  old_password: string;
+  @IsOptional()
+  password: string;
+}
