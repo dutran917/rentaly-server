@@ -60,7 +60,7 @@ export class PaymentService {
       return {
         status,
         message,
-        redirect: `http://localhost:3000/user/rental-management`,
+        redirect: `${process.env.CLIENT_PAGE}/user/rental-management`,
       };
     } catch (error) {
       throw error;
