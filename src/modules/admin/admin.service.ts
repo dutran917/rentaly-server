@@ -106,8 +106,8 @@ export class AdminService {
         include: {
           apartment: true,
         },
-        take: +input.page_size,
-        skip: +(input.page_size * input.page_index),
+        take: Number(input.page_size),
+        skip: Number(input.page_size) * Number(input.page_index),
       }),
       await this.prisma.user.count({
         where: {

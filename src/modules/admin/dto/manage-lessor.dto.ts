@@ -12,10 +12,8 @@ export class ApproveLessorInput {
 
 export class ListRegisterLessorInput {
   @IsNotEmpty()
-  @IsNumber()
   page_size: number;
   @IsNotEmpty()
-  @IsNumber()
   page_index: number;
   @IsOptional()
   verified: VERIFY_STATUS;
