@@ -18,3 +18,16 @@ export class ListRegisterLessorInput {
   @IsOptional()
   verified: VERIFY_STATUS;
 }
+
+export class UpdateLessorInput {
+  @IsNotEmpty()
+  lessorId: number;
+  @IsOptional()
+  full_name: string;
+  @IsOptional()
+  email: string;
+  @IsOptional()
+  phone: string;
+  @IsOptional()
+  password: string;
+}

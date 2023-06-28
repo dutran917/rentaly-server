@@ -12,6 +12,7 @@ import { Auth, CurrentUser } from 'src/decorator/auth';
 import {
   ApproveLessorInput,
   ListRegisterLessorInput,
+  UpdateLessorInput,
 } from './dto/manage-lessor.dto';
 import { UserService } from '../user/user.service';
 import {
@@ -21,6 +22,9 @@ import {
 import { PostService } from '../post/post.service';
 import { GetRoomListDto } from '../post/dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from '../post/dto/update-post.dto';
+import { ListUserInput } from './dto/manager-user';
+import { UpdateInfoLessorInput } from '../lessor/dto/lessor.dto';
+import { LessorService } from '../lessor/lessor.service';
 
 @Controller('admin')
 export class AdminController {
@@ -28,6 +32,7 @@ export class AdminController {
     private readonly adminService: AdminService,
     private readonly userService: UserService,
     private readonly postService: PostService,
+    private readonly lessorService: LessorService,
   ) {}
 
   @Post('/approve-lessor')
@@ -47,10 +52,23 @@ export class AdminController {
   async getListRegisterLessor(@Query() input: ListRegisterLessorInput) {
     return await this.adminService.getListRegisterLessor(input);
   }
+
+  @Get('/list-user')
+  @Auth('admin')
+  async getListUser(@Query() input: ListUserInput) {
+    return await this.adminService.getListUser(input);
+  }
+
   @Get('/detail-lessor/:id')
   @Auth('admin')
   async getDetailLessor(@Param('id') idLessor: number) {
     return await this.adminService.getDetailLessor(idLessor);
+  }
+
+  @Post('/edit-lessor')
+  @Auth('admin')
+  async editProfileLessor(@Body() input: UpdateLessorInput) {
+    return await this.adminService.editProfileLessor(input);
   }
 
   @Get('/list-apartment')

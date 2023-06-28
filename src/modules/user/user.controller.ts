@@ -8,9 +8,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('/info-user')
   @Auth('user')
-  async getInfoUser(@CurrentUser('id') userId) {
+  async getInfoUser(@CurrentUser('id') userId: number) {
     return await this.userService.getInfoUser(userId);
   }
+
+  @Post('/update-info')
+  @Auth('user')
+  async userUpdateProfile(
+    @CurrentUser('id') userId: number,
+    @Body() input: { full_name?: string; phone?: string },
+  ) {
+    return await this.userService.userUpdateProfile(userId, input);
+  }
+
   @Auth('user')
   @Get('/history-rent')
   async getHistoryRent(@CurrentUser('id') userId: number) {

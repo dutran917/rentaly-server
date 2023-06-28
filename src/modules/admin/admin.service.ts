@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ApproveLessorInput,
   ListRegisterLessorInput,
+  UpdateLessorInput,
 } from './dto/manage-lessor.dto';
 import { PrismaService } from '../share/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -11,6 +12,8 @@ import {
   ApproveApartmentInput,
   GetListApartmentInput,
 } from './dto/manage-apartment';
+import * as moment from 'moment';
+import { ListUserInput } from './dto/manager-user';
 @Injectable()
 export class AdminService {
   constructor(
@@ -90,6 +93,29 @@ export class AdminService {
     }
   }
 
+  async editProfileLessor(input: UpdateLessorInput) {
+    const data = {};
+    if (!!input.password) {
+      const hashPash = await bcrypt.hash(input.password, 10);
+      data['password'] = hashPash;
+    }
+    delete input['password'];
+    await this.prisma.user.update({
+      where: {
+        id: +input.lessorId,
+      },
+      data: {
+        full_name: input.full_name,
+        email: input.email,
+        phone: input.phone,
+        ...data,
+      },
+    });
+    return {
+      ...input,
+    };
+  }
+
   async getListRegisterLessor(input: ListRegisterLessorInput) {
     let where = {};
     if (!!input.verified) {
@@ -128,21 +154,79 @@ export class AdminService {
     };
   }
 
+  async getListUser(input: ListUserInput) {
+    const where = {};
+    if (!!input.search) {
+      where['OR'] = [
+        {
+          email: input.search,
+        },
+        {
+          phone: input.search,
+        },
+        {
+          full_name: input.search,
+        },
+      ];
+    }
+    const data = await this.prisma.user.findMany({
+      where: { ...where, role: 'user' },
+      take: +input.page_size,
+      skip: +input.page_index * +input.page_size,
+    });
+    const total = await this.prisma.user.count({
+      where: { ...where, role: 'user' },
+    });
+    return {
+      data,
+      total,
+    };
+  }
+
   async getDetailLessor(idLessor: number) {
     const lessor = await this.prisma.user.findUnique({
       where: {
         id: +idLessor,
       },
+      select: {
+        email: true,
+        full_name: true,
+        phone: true,
+        verified: true,
+      },
+    });
+    const listApartment = await this.prisma.apartment.findMany({
+      where: {
+        ownerId: +idLessor,
+      },
       include: {
-        apartment: {
+        rooms: {
           include: {
-            rooms: true,
+            RoomRenter: true,
           },
         },
       },
     });
+    const total = await this.prisma.apartment.count({
+      where: {
+        ownerId: +idLessor,
+      },
+    });
+
     return {
       data: lessor,
+      listApartment: listApartment.map((item) => ({
+        ...item,
+        totalIncome: item.rooms.reduce((total, item) => {
+          return (
+            total +
+            item.RoomRenter.reduce((totalRent, rent) => {
+              return totalRent + rent.price;
+            }, 0)
+          );
+        }, 0),
+      })),
+      total,
     };
   }
 
@@ -165,7 +249,11 @@ export class AdminService {
         ...where,
       },
       include: {
-        rooms: true,
+        rooms: {
+          include: {
+            RoomRenter: true,
+          },
+        },
       },
       take: +input.page_size,
       skip: +(input.page_size * input.page_index),
@@ -177,8 +265,23 @@ export class AdminService {
     });
 
     return {
-      data,
       total,
+      data: data.map((item) => {
+        return {
+          ...item,
+          rented: item.rooms.filter((room) => {
+            if (room.RoomRenter.length > 0) {
+              const checkIsRent =
+                moment(room.RoomRenter[room.RoomRenter.length - 1].end_at)
+                  .toDate()
+                  .getTime() > new Date().getTime();
+              if (checkIsRent) {
+                return room;
+              }
+            }
+          }),
+        };
+      }),
     };
   }
 

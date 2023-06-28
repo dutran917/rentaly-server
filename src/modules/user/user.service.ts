@@ -28,11 +28,39 @@ export class UserService {
     }
   }
 
+  async userUpdateProfile(
+    userId: number,
+    input: { full_name?: string; phone?: string },
+  ) {
+    const data = {};
+    if (!!input.full_name) {
+      data['full_name'] = input.full_name;
+    }
+    if (!!input.phone) {
+      data['phone'] = input.phone;
+    }
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: +userId,
+        },
+        data: {
+          ...data,
+        },
+      });
+      return {
+        ...input,
+      };
+    } catch (error) {
+      throw new BadRequestException('PHONE_EXISTED');
+    }
+  }
+
   async getInfoUser(userId: number) {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
-          id: userId,
+          id: +userId,
         },
       });
       delete user.password;
