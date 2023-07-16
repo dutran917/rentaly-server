@@ -30,6 +30,7 @@ Table Room {
   TagsInRoom TagsInRoom [not null]
   RoomRenter RoomRenter [not null]
   Apointment Apointment [not null]
+  display Boolean [not null, default: true]
 }
 
 Table RoomRenter {

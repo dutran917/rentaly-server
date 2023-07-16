@@ -42,6 +42,7 @@ model Room {
   TagsInRoom  TagsInRoom[]
   RoomRenter  RoomRenter[]
   Apointment  Apointment[]
+  display     Boolean      @default(true)
 }
 
 model RoomRenter {

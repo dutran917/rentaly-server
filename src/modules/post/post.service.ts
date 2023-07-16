@@ -201,14 +201,30 @@ export class PostService {
             },
           }
         : null,
-      historyRent: historyRent.map((item) => ({
-        ...item,
-        user: {
-          email: item.user.email,
-          full_name: item.user.full_name,
-          phone: item.user.phone,
-        },
-      })),
+      historyRent: historyRent.map((item) => {
+        let status;
+        if (moment(item.end_at).toDate().getTime() > currentDate.getTime()) {
+          status = 'RENTING';
+          if (
+            moment(item.end_at).subtract(10, 'd').toDate().getTime() <
+            currentDate.getTime()
+          ) {
+            status = 'EXPIRED_SOON';
+          }
+        }
+        if (moment(item.end_at).toDate().getTime() <= currentDate.getTime()) {
+          status = 'OUT_DATE';
+        }
+        return {
+          ...item,
+          status: status,
+          user: {
+            email: item.user.email,
+            full_name: item.user.full_name,
+            phone: item.user.phone,
+          },
+        };
+      }),
     };
   }
 
@@ -352,17 +368,16 @@ export class PostService {
   }
 
   async updateRoom(input: UpdateRoomDto) {
-    const { title, price, maximum, living_room, bed_room, tags, area } = input;
+    const { title, price, maximum, bed_room, tags, area } = input;
     try {
-      const room = await this.prisma.room.update({
+      await this.prisma.room.update({
         where: {
-          id: input.roomId,
+          id: +input.roomId,
         },
         data: {
           title,
           price,
           maximum,
-          living_room,
           bed_room,
           floor: title.charAt(0),
           area,
@@ -405,5 +420,35 @@ export class PostService {
   }
   async getRoomTag() {
     return await this.prisma.roomTag.findMany({});
+  }
+
+  async hideRoom(input: { roomId: number; display: boolean }) {
+    try {
+      const checkRent = await this.prisma.roomRenter.findMany({
+        where: {
+          room_id: +input.roomId,
+        },
+      });
+      if (input.display) {
+        checkRent.forEach((item) => {
+          if (moment(item.end_at).toDate().getTime() > new Date().getTime()) {
+            throw new BadRequestException('ROOM_IS_RENTING');
+          }
+        });
+      }
+      await this.prisma.room.update({
+        where: {
+          id: +input.roomId,
+        },
+        data: {
+          display: input.display,
+        },
+      });
+      return {
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

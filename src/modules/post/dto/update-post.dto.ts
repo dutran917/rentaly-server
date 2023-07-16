@@ -20,9 +20,7 @@ export class UpdateRoomDto {
   title: string;
   price: number;
   maximum: number;
-  living_room: number;
   bed_room: number;
-  floor: number;
   tags: number[];
   area: number;
 }

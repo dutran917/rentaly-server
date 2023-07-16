@@ -45,12 +45,14 @@ export class RentalService {
     let total = await this.prisma.apartment.count({
       where: {
         verified: 'ACCEPT',
+        published: true,
         ...whereOption,
       },
     });
     let data = await this.prisma.apartment.findMany({
       where: {
         verified: 'ACCEPT',
+        published: true,
         ...whereOption,
       },
       take: +input.page_size,
@@ -104,7 +106,7 @@ export class RentalService {
     return {
       ...data,
       rooms: data.rooms.filter((room) => {
-        if (room.RoomRenter.length > 0) {
+        if (room.RoomRenter.length > 0 && room.display) {
           if (
             moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
               .toDate()
@@ -115,7 +117,7 @@ export class RentalService {
             // console.log('hell no');
           }
         } else {
-          return room;
+          if (room.display) return room;
         }
       }),
     };

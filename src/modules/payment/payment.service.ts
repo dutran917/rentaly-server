@@ -29,25 +29,25 @@ export class PaymentService {
       const { order_id, status, amount, code, message } =
         this.vnPayGateway.handleResponse(data);
 
+      const room = await this.prisma.room.findUnique({
+        where: {
+          id: Number(orderInfo?.room_id),
+        },
+        include: {
+          RoomRenter: true,
+          Apartment: true,
+        },
+      });
+      if (
+        !!room &&
+        moment(orderInfo?.start_at).add(7, 'd').toDate().getTime() <
+          moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
+            .toDate()
+            .getTime()
+      ) {
+        throw new Error('ROOM ALREADY RENTED');
+      }
       if (code == '00') {
-        const room = await this.prisma.room.findUnique({
-          where: {
-            id: Number(orderInfo?.room_id),
-          },
-          include: {
-            RoomRenter: true,
-            Apartment: true,
-          },
-        });
-        if (
-          !!room &&
-          moment(orderInfo?.start_at).add(7, 'd').toDate().getTime() <
-            moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
-              .toDate()
-              .getTime()
-        ) {
-          throw new Error('ROOM ALREADY RENTED');
-        }
         const handleRent = this.prisma.roomRenter.create({
           data: {
             user_id: Number(orderInfo?.user_id),
@@ -57,7 +57,15 @@ export class PaymentService {
             end_at: orderInfo?.end_time,
           },
         });
-        await this.prisma.$transaction([handleRent]);
+        const hide = this.prisma.room.update({
+          where: {
+            id: Number(orderInfo?.room_id),
+          },
+          data: {
+            display: false,
+          },
+        });
+        await this.prisma.$transaction([handleRent, hide]);
         return {
           status,
           message,

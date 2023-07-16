@@ -14,12 +14,14 @@ import {
 } from './dto/manage-apartment';
 import * as moment from 'moment';
 import { ListUserInput } from './dto/manager-user';
+import { UserService } from '../user/user.service';
 @Injectable()
 export class AdminService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly userService: UserService,
   ) {}
   async adminApproveLessor(input: ApproveLessorInput) {
     try {
@@ -173,12 +175,22 @@ export class AdminService {
       where: { ...where, role: 'user' },
       take: +input.page_size,
       skip: +input.page_index * +input.page_size,
+      include: {
+        RoomRenter: true,
+      },
     });
     const total = await this.prisma.user.count({
       where: { ...where, role: 'user' },
     });
     return {
-      data,
+      data: data.map((item) => ({
+        id: item.id,
+        full_name: item.full_name,
+        email: item.email,
+        phone: item.phone,
+        status: item.status,
+        roomRenter: item.RoomRenter,
+      })),
       total,
     };
   }
@@ -227,6 +239,38 @@ export class AdminService {
         }, 0),
       })),
       total,
+    };
+  }
+
+  async getDetailUser(idUser: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: +idUser,
+      },
+      select: {
+        email: true,
+        full_name: true,
+        phone: true,
+        verified: true,
+        RoomRenter: {
+          include: {
+            room: {
+              include: {
+                Apartment: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // const historyRent = await this.userService.getHistoryRent(idUser);
+
+    return {
+      data: user,
+      historyRent: {
+        data: user.RoomRenter,
+      },
     };
   }
 
@@ -303,6 +347,45 @@ export class AdminService {
       },
       data: {
         verified: input.approve ? 'ACCEPT' : 'REFUSE',
+        published: input.approve ? true : false,
+      },
+    });
+    return {
+      message: 'SUCCESS',
+    };
+  }
+
+  async hideApartment(input: { apartmentId: number; display: boolean }) {
+    const { apartmentId, display } = input;
+    await this.prisma.apartment.update({
+      where: {
+        id: +apartmentId,
+      },
+      data: {
+        published: display,
+      },
+    });
+    return {
+      message: 'SUCCESS',
+    };
+  }
+
+  async blockUser(input: { userId: number; status: boolean }) {
+    const { userId, status } = input;
+    await this.prisma.user.update({
+      where: {
+        id: +userId,
+      },
+      data: {
+        status: status,
+      },
+    });
+    await this.prisma.apartment.updateMany({
+      where: {
+        ownerId: +userId,
+      },
+      data: {
+        published: status,
       },
     });
     return {

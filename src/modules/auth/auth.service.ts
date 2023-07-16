@@ -34,6 +34,9 @@ export class AuthService {
       if (user.verified !== 'ACCEPT') {
         throw new BadRequestException('NOT VERIFIED');
       }
+      if (!user.status) {
+        throw new UnauthorizedException('BLOCKED');
+      }
       delete user['password'];
       return {
         ...user,
@@ -60,6 +63,9 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('WRONG_CREDENTIALS');
+    }
+    if (!!user && !user.status) {
+      throw new UnauthorizedException('BLOCKED');
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {

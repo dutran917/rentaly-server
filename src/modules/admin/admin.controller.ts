@@ -65,6 +65,12 @@ export class AdminController {
     return await this.adminService.getDetailLessor(idLessor);
   }
 
+  @Get('/detail-user/:id')
+  @Auth('admin')
+  async getDetailUser(@Param('id') idUser: number) {
+    return await this.adminService.getDetailUser(idUser);
+  }
+
   @Post('/edit-lessor')
   @Auth('admin')
   async editProfileLessor(@Body() input: UpdateLessorInput) {
@@ -105,5 +111,19 @@ export class AdminController {
   @Auth('admin')
   async approveApartment(@Body() input: ApproveApartmentInput) {
     return await this.adminService.approveApartment(input);
+  }
+
+  @Post('/hide-apartment')
+  @Auth('admin')
+  async hideApartment(
+    @Body() input: { apartmentId: number; display: boolean },
+  ) {
+    return await this.adminService.hideApartment(input);
+  }
+
+  @Post('/block-user')
+  @Auth('admin')
+  async blockUser(@Body() input: { userId: number; status: boolean }) {
+    return await this.adminService.blockUser(input);
   }
 }

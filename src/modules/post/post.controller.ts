@@ -68,13 +68,18 @@ export class PostController {
   }
 
   @Auth('lessor')
+  @Post('/hide-room')
+  hideRoom(@Body() input: { roomId: number; display: boolean }) {
+    return this.postService.hideRoom(input);
+  }
+  @Auth('lessor')
   @Patch('/edit-apartment')
   updateApartment(@Body() input: UpdateApartmentDto) {
     return this.postService.updateApartment(input);
   }
 
   @Auth('lessor')
-  @Patch('/edit-room')
+  @Post('/edit-room')
   updateRoom(@Body() input: UpdateRoomDto) {
     return this.postService.updateRoom(input);
   }
