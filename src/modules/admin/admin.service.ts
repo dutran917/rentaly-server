@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import {
   ApproveLessorInput,
+  CreateLessorInput,
   ListRegisterLessorInput,
   UpdateLessorInput,
 } from './dto/manage-lessor.dto';
@@ -15,6 +16,7 @@ import {
 import * as moment from 'moment';
 import { ListUserInput } from './dto/manager-user';
 import { UserService } from '../user/user.service';
+import { VERIFY_STATUS, role } from '@prisma/client';
 @Injectable()
 export class AdminService {
   constructor(
@@ -124,6 +126,28 @@ export class AdminService {
       where = {
         verified: input.verified,
       };
+    }
+    if (!!input.search) {
+      where['OR'] = [
+        {
+          full_name: {
+            mode: 'insensitive',
+            contains: input.search,
+          },
+        },
+        {
+          email: {
+            mode: 'insensitive',
+            contains: input.search,
+          },
+        },
+        {
+          phone: {
+            mode: 'insensitive',
+            contains: input.search,
+          },
+        },
+      ];
     }
     const [data, total] = [
       await this.prisma.user.findMany({
@@ -391,5 +415,27 @@ export class AdminService {
     return {
       message: 'SUCCESS',
     };
+  }
+
+  async createLessor(input: CreateLessorInput) {
+    try {
+      const hashPash = await bcrypt.hash(input.password, 10);
+      await this.prisma.user.create({
+        data: {
+          phone: input.phone,
+          email: input.email,
+          full_name: input.full_name,
+          password: hashPash,
+          role: role.lessor,
+          verified: VERIFY_STATUS.ACCEPT,
+        },
+      });
+      return {
+        message: 'SUCCESS',
+      };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }

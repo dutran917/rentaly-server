@@ -70,7 +70,6 @@ export class RentalService {
     if (!!lat && !!long) {
       data = data.filter((item) => {
         const distance = calculateDistance(lat, long, item.lat, item.long);
-        console.log(distance, 'dis');
 
         if (distance < 2000) {
           return item;
@@ -79,7 +78,6 @@ export class RentalService {
       });
       total = data.length;
     }
-    console.log(data);
 
     return {
       data,
@@ -118,7 +116,6 @@ export class RentalService {
           ) {
             return room;
           } else {
-            // console.log('hell no');
           }
         } else {
           if (room.display) return room;

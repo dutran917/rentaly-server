@@ -17,6 +17,8 @@ export class ListRegisterLessorInput {
   page_index: number;
   @IsOptional()
   verified: VERIFY_STATUS;
+  @IsOptional()
+  search: string;
 }
 
 export class UpdateLessorInput {
@@ -29,5 +31,15 @@ export class UpdateLessorInput {
   @IsOptional()
   phone: string;
   @IsOptional()
+  password: string;
+}
+export class CreateLessorInput {
+  @IsNotEmpty()
+  email: string;
+  @IsNotEmpty()
+  phone: string;
+  @IsNotEmpty()
+  full_name: string;
+  @IsNotEmpty()
   password: string;
 }

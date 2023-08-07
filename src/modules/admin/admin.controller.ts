@@ -11,6 +11,7 @@ import { AdminService } from './admin.service';
 import { Auth, CurrentUser } from 'src/decorator/auth';
 import {
   ApproveLessorInput,
+  CreateLessorInput,
   ListRegisterLessorInput,
   UpdateLessorInput,
 } from './dto/manage-lessor.dto';
@@ -53,6 +54,10 @@ export class AdminController {
     return await this.adminService.getListRegisterLessor(input);
   }
 
+  @Post('/create-lessor')
+  async createLessor(@Body() input: CreateLessorInput) {
+    return await this.adminService.createLessor(input);
+  }
   @Get('/list-user')
   @Auth('admin')
   async getListUser(@Query() input: ListUserInput) {
