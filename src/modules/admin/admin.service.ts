@@ -249,19 +249,24 @@ export class AdminService {
       },
     });
 
+    const apartments = listApartment.map((item) => ({
+      ...item,
+      totalIncome: item.rooms.reduce((total, item) => {
+        return (
+          total +
+          item.RoomRenter.reduce((totalRent, rent) => {
+            return totalRent + rent.price;
+          }, 0)
+        );
+      }, 0),
+    }));
+    const lessorIncome = apartments.reduce((total, item) => {
+      return total + item.totalIncome;
+    }, 0);
     return {
       data: lessor,
-      listApartment: listApartment.map((item) => ({
-        ...item,
-        totalIncome: item.rooms.reduce((total, item) => {
-          return (
-            total +
-            item.RoomRenter.reduce((totalRent, rent) => {
-              return totalRent + rent.price;
-            }, 0)
-          );
-        }, 0),
-      })),
+      listApartment: apartments,
+      lessorIncome: lessorIncome,
       total,
     };
   }
