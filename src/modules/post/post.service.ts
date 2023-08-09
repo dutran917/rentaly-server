@@ -282,6 +282,7 @@ export class PostService {
         RoomRenter: true,
       },
     });
+    const currentDate = new Date();
     const result = data.map((item) => {
       return {
         ...item,
@@ -302,7 +303,6 @@ export class PostService {
         result.filter((item) => item.status === RoomStatus.RENTED);
       }
     }
-    const currentDate = new Date();
     return {
       data: result,
       total,
