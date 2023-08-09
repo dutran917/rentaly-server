@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Query } from 'express-serve-static-core';
 import { VnPayAdapter, VnpPayPaymentFactory } from './payment.provider';
 import { ConfigService } from '@nestjs/config';
@@ -16,8 +16,30 @@ export class PaymentService {
     this.vnPayGateway = VnpPayPaymentFactory.Build(this.config);
   }
 
-  genRedirectUrl(data: OrderInfoDto) {
-    return this.vnPayGateway.generateRedirectUrl(data);
+  async genRedirectUrl(data: OrderInfoDto) {
+    try {
+      const room = await this.prisma.room.findUnique({
+        where: {
+          id: Number(data?.room_id),
+        },
+        include: {
+          RoomRenter: true,
+          Apartment: true,
+        },
+      });
+      if (
+        !!room &&
+        moment(data?.start_time).add(7, 'd').toDate().getTime() <
+          moment(room.RoomRenter[room.RoomRenter?.length - 1]?.end_at)
+            .toDate()
+            .getTime()
+      ) {
+        throw new BadRequestException('Phòng đã được thuê');
+      }
+      return this.vnPayGateway.generateRedirectUrl(data);
+    } catch (error) {
+      throw error;
+    }
   }
   async handleVnpResponse(data: Query) {
     // console.log(data);

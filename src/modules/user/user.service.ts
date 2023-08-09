@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../share/prisma.service';
 import { UserLoginInput, UserRegisterInput } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
@@ -54,6 +58,39 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException('PHONE_EXISTED');
     }
+  }
+
+  async userUpdatePassword(
+    userId: number,
+    input: { old_password?: string; new_password?: string },
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: +userId,
+      },
+    });
+    if (!!input.new_password && !!input.old_password) {
+      const passwordMatch = await bcrypt.compare(
+        input.old_password,
+        user.password,
+      );
+      if (passwordMatch) {
+        const hashPash = await bcrypt.hash(input.new_password, 10);
+        await this.prisma.user.update({
+          where: {
+            id: +userId,
+          },
+          data: {
+            password: hashPash,
+          },
+        });
+      } else {
+        throw new UnauthorizedException('WRONG_PASSWORD');
+      }
+    }
+    return {
+      message: 'SUCCESS',
+    };
   }
 
   async getInfoUser(userId: number) {

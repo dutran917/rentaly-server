@@ -283,7 +283,7 @@ export class PostService {
       },
     });
     const currentDate = new Date();
-    const result = data.map((item) => {
+    let result = data.map((item) => {
       return {
         ...item,
         status:
@@ -296,13 +296,17 @@ export class PostService {
       };
     });
     if (!!input.status) {
+      console.log('ok');
+
       if (input.status === RoomStatus.FREE) {
-        result.filter((item) => item.status === RoomStatus.FREE);
+        result = result.filter((item) => item.status === RoomStatus.FREE);
       }
       if (input.status === RoomStatus.RENTED) {
-        result.filter((item) => item.status === RoomStatus.RENTED);
+        result = result.filter((item) => item.status === RoomStatus.RENTED);
       }
     }
+    console.log(result);
+
     return {
       data: result,
       total,

@@ -21,6 +21,15 @@ export class UserController {
     return await this.userService.userUpdateProfile(userId, input);
   }
 
+  @Post('/update-password')
+  @Auth('user')
+  async userUpdatePassword(
+    @CurrentUser('id') userId: number,
+    @Body() input: { old_password?: string; new_password?: string },
+  ) {
+    return await this.userService.userUpdatePassword(userId, input);
+  }
+
   @Auth('user')
   @Get('/history-rent')
   async getHistoryRent(@CurrentUser('id') userId: number) {

@@ -27,7 +27,7 @@ export class PaymentController {
       end_time: string;
     },
   ) {
-    const url = this.paymentService.genRedirectUrl({
+    const url = await this.paymentService.genRedirectUrl({
       order_id: crypto.randomUUID(),
       description: JSON.stringify({
         user_id,
