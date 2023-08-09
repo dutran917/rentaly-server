@@ -179,7 +179,7 @@ export class RentalService {
           date: input.date,
           phone: input.phone,
           roomId: +input.roomId,
-          note: input.note,
+          note: input.note ?? 'Không có',
           apartmentId: +input.apartmentId,
         },
       });

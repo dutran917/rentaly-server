@@ -1,7 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateApartmentDto, CreateRoomDto } from './dto/create-post.dto';
 import { PrismaService } from '../share/prisma.service';
-import { GetListApartmentDto, GetRoomListDto } from './dto/get-post.dto';
+import {
+  GetListApartmentDto,
+  GetRoomListDto,
+  RoomStatus,
+} from './dto/get-post.dto';
 import { UpdateApartmentDto, UpdateRoomDto } from './dto/update-post.dto';
 import * as moment from 'moment';
 @Injectable()
@@ -278,20 +282,29 @@ export class PostService {
         RoomRenter: true,
       },
     });
+    const result = data.map((item) => {
+      return {
+        ...item,
+        status:
+          item.RoomRenter.length > 0 &&
+          moment(item.RoomRenter[item.RoomRenter.length - 1].end_at)
+            .toDate()
+            .getTime() > currentDate.getTime()
+            ? 'RENTED'
+            : 'FREE',
+      };
+    });
+    if (!!input.status) {
+      if (input.status === RoomStatus.FREE) {
+        result.filter((item) => item.status === RoomStatus.FREE);
+      }
+      if (input.status === RoomStatus.RENTED) {
+        result.filter((item) => item.status === RoomStatus.RENTED);
+      }
+    }
     const currentDate = new Date();
     return {
-      data: data.map((item) => {
-        return {
-          ...item,
-          status:
-            item.RoomRenter.length > 0 &&
-            moment(item.RoomRenter[item.RoomRenter.length - 1].end_at)
-              .toDate()
-              .getTime() > currentDate.getTime()
-              ? 'RENTED'
-              : 'FREE',
-        };
-      }),
+      data: result,
       total,
     };
   }
