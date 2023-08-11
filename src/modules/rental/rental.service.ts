@@ -10,7 +10,7 @@ export class RentalService {
   constructor(private readonly prisma: PrismaService) {}
 
   async userGetListApartment(input: GetListRentalDto) {
-    const whereOption = {};
+    const whereOption: any = {};
     if (!!input.search) {
       whereOption['address'] = {
         mode: 'insensitive',
@@ -30,6 +30,7 @@ export class RentalService {
             lte: +input.price[1],
             gte: +input.price[0],
           },
+          display: true,
         },
       };
     }
@@ -38,6 +39,20 @@ export class RentalService {
         some: {
           living_room: +input.living_room,
           bed_room: +input.bed_room,
+          display: true,
+        },
+      };
+    }
+    if (!!input.price && input.bed_room && !!input.bed_room) {
+      whereOption['rooms'] = {
+        some: {
+          price: {
+            lte: +input.price[1],
+            gte: +input.price[0],
+          },
+          living_room: +input.living_room,
+          bed_room: +input.bed_room,
+          display: true,
         },
       };
     }
